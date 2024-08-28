@@ -20,7 +20,11 @@
             <li class="sidebar-header">Apps</li>
             --}}
             <!-- add 'active' class attribute value -->
-            <li class="sidebar-item {{ Request::is('message-categories') ? 'active' : '' }}{{ Request::is('message-templates') ? 'active' : '' }}">
+            <li class="sidebar-item 
+                {{ Request::is('message-categories') ? 'active' : '' }}
+                {{ Request::is('message-templates') ? 'active' : '' }}
+                {{ Request::is('response-templates') ? 'active' : '' }}
+            ">
                 <a
                     data-bs-target="#messages"
                     data-bs-toggle="collapse"
@@ -35,7 +39,11 @@
                 <!-- add 'show' class attribute value-->
                 <ul
                     id="messages"
-                    class="sidebar-dropdown list-unstyled collapse {{ Request::is('message-categories') ? 'show' : '' }}{{ Request::is('message-templates') ? 'show' : '' }}"
+                    class="sidebar-dropdown list-unstyled collapse 
+                        {{ Request::is('message-categories') ? 'show' : '' }}
+                        {{ Request::is('message-templates') ? 'show' : '' }}
+                        {{ Request::is('response-templates') ? 'show' : '' }}
+                    "
                     data-bs-parent="#sidebar"
                 >
                     <!-- add 'active' class attribute value -->
@@ -63,6 +71,14 @@
                             Message Templates
                         </a>
                     </li>
+                    <li class="sidebar-item {{ Request::is('response-templates') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('response-templates.index') }}">                            {{-- <i
+                                class="align-middle"
+                                data-lucide="chevron-last"
+                            ></i> --}}
+                            Response Templates</a
+                        >
+                    </li>                    
                     <li class="sidebar-item">
                         <a class="sidebar-link" href="/ecommerce-customers">
                             {{-- <i
@@ -71,15 +87,6 @@
                             ></i> --}}
                             Publish Messages
                         </a>
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="/ecommerce-invoice">
-                            {{-- <i
-                                class="align-middle"
-                                data-lucide="chevron-last"
-                            ></i> --}}
-                            Response Templates</a
-                        >
                     </li>
                     <li class="sidebar-item">
                         <a class="sidebar-link" href="/ecommerce-pricing">

@@ -1,4 +1,4 @@
-@extends('layouts.app') @section('title', 'Message Templates')
+@extends('layouts.app') @section('title', 'Response Templates')
 @section('content')
 <div class="container-fluid p-0">
     @if(session('success'))
@@ -77,7 +77,7 @@
     @endif
     <div class="row mb-2 mb-xl-3">
         <div class="col-auto d-none d-sm-block">
-            <h3>Message Templates</h3>
+            <h3>Response Templates</h3>
         </div>
 
         <div class="col-auto ms-auto text-end mt-n1">
@@ -87,7 +87,7 @@
                     class="btn btn-lg btn-primary"
                     data-bs-toggle="modal"
                     style="padding: 5px"
-                    data-bs-target="#addTemplateModel"
+                    data-bs-target="#addResponseTemplateModel"
                 >
                     <i class="align-middle" data-lucide="plus">&nbsp;</i> New
                 </button>
@@ -120,10 +120,8 @@
                     >
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Title</th>
-                                <th>Type</th>
-                                <th>Category</th>
+                                <th>Response Message</th>
+                                <th>Response For</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -131,12 +129,18 @@
                         <tbody>
                             @foreach ($templates as $template)
                             <tr>
-                                <td>{{ $template->id}}</td>
                                 <td style="width: 40%">
                                     {{ $template->content }}
                                 </td>
-                                <td>{{ ucfirst($template->type) }}</td>
-                                <td>{{ $template->title }}</td>
+                                <td>
+                                    <button class="btn " 
+                                        type="button" 
+                                        data-bs-toggle="tooltip" 
+                                        data-bs-placement="bottom" 
+                                        title="{{ $template->tempContent }}">
+                                        Template-{{ $template->tempId }} 
+                                    </button>
+                                </td>
                                 <td>
                                     {{ $template->status ? "Active" : "Inactive" }}
                                 </td>
@@ -146,7 +150,7 @@
                                         title="View"
                                         class="btn btn-sm"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#viewTemplateModal{{ $template->id }}"
+                                        data-bs-target="#viewResponseTemplateModal{{ $template->id }}"
                                     >
                                         <i
                                             class="align-middle"
@@ -162,19 +166,16 @@
                                     <!-- View Template Modal -->
                                     <div
                                         class="modal fade"
-                                        id="viewTemplateModal{{ $template->id }}"
+                                        id="viewResponseTemplateModal{{ $template->id }}"
                                         tabindex="-1"
-                                        aria-labelledby="viewTemplateModalLabel{{ $template->id }}"
+                                        aria-labelledby="viewResponseTemplateModalLabel{{ $template->id }}"
                                         aria-hidden="true"
                                     >
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5
-                                                        class="modal-title"
-                                                        id="viewTemplateModalLabel{{ $template->id }}"
-                                                    >
-                                                        View Message Template
+                                                    <h5 class="modal-title" id="viewResponseTemplateModalLabel{{ $template->id }}">
+                                                        View Response Template
                                                     </h5>
                                                     <button
                                                         type="button"
@@ -185,16 +186,8 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <div class="form-group">
-                                                        <label
-                                                            for="viewDescription{{ $template->id }}"
-                                                            >Message
-                                                            Content</label
-                                                        >
-                                                        <textarea
-                                                            style="
-                                                                max-height: 150px;
-                                                                min-height: 150px;
-                                                            "
+                                                        <label for="viewDescription{{ $template->id }}">Response Content</label >
+                                                        <textarea style="max-height: 150px;min-height: 150px;"
                                                             class="form-control"
                                                             id="viewContent{{ $template->id }}"
                                                             readonly
@@ -202,33 +195,19 @@
                                                             >{{ $template->content }}</textarea
                                                         >
                                                     </div>
-
                                                     <div class="form-group">
-                                                        <label
-                                                            for="viewTitle{{ $template->id }}"
-                                                            >Type</label
-                                                        >
-                                                        <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            id="viewType{{ $template->id }}"
-                                                            value="{{ $template->type }}"
-                                                            readonly
-                                                        />
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label
+                                                        <label 
                                                             for="viewTitle{{ $template->id }}"
                                                             >Message
-                                                            Category</label
+                                                            Template</label
                                                         >
-                                                        <input
-                                                            type="text"
+                                                        <textarea style="max-height: 150px;min-height: 150px;"
                                                             class="form-control"
-                                                            id="viewType{{ $template->id }}"
-                                                            value="{{ $template->title }}"
+                                                            id="viewMessageTemplate{{ $template->id }}"
+                                                            value="{{ $template->tempContent }}"
                                                             readonly
-                                                        />
+                                                            >{{ $template->tempContent }}</textarea
+                                                        >
                                                     </div>
                                                     <div class="form-group">
                                                         <label
@@ -242,35 +221,7 @@
                                                             value="{{ $template->status ? 'Active' : 'Inactive' }}"
                                                             readonly
                                                         />
-                                                    </div>
-
-                                                    <!-- <div class="form-group">
-                                                        <label
-                                                            for="viewCreatedBy{{ $template->id }}"
-                                                            >Created By</label
-                                                        >
-                                                        <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            id="viewCreatedBy{{ $template->id }}"
-                                                            value="{{ $template->created_by }}"
-                                                            readonly
-                                                        />
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label
-                                                            for="viewUpdatedBy{{ $template->id }}"
-                                                            >Updated By</label
-                                                        >
-                                                        <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            id="viewUpdatedBy{{ $template->id }}"
-                                                            value="{{ $template->updated_by }}"
-                                                            readonly
-                                                        />
-                                                    </div> -->
+                                                    </div>                                                    
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button
@@ -290,7 +241,7 @@
                                         title="Edit"
                                         class="btn btn-sm"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#editTemplateModal{{ $template->id }}"
+                                        data-bs-target="#editResponseTemplateModal{{ $template->id }}"
                                     >
                                         <i
                                             class="align-middle"
@@ -307,7 +258,7 @@
 
                                     <div
                                         class="modal fade"
-                                        id="editTemplateModal{{ $template->id }}"
+                                        id="editResponseTemplateModal{{ $template->id }}"
                                         tabindex="-1"
                                         role="dialog"
                                         aria-hidden="true"
@@ -316,7 +267,7 @@
                                             <div class="modal-content">
                                                 <form
                                                     id="editTemplateForm{{ $template->id }}"
-                                                    action="{{ route('message-templates.update', $template->id) }}"
+                                                    action="{{ route('response-templates.update', $template->id) }}"
                                                     method="POST"
                                                     onsubmit="return validateEditForm('{{$template->id}}')"
                                                 >
@@ -324,9 +275,9 @@
                                                     <div class="modal-header">
                                                         <h5
                                                             class="modal-title"
-                                                            id="editTemplateModalLabel{{ $template->id }}"
+                                                            id="editResponseTemplateModalLabel{{ $template->id }}"
                                                         >
-                                                            Edit Message
+                                                            Edit Response
                                                             Template
                                                         </h5>
                                                         <button
@@ -361,91 +312,63 @@
                                                             @enderror
                                                         </div>
 
+                                                         @php
+                                                            $messagetTemplateIdCollection="";
+                                                            foreach ($messageTemplates as $temp){
+                                                                $messagetTemplateIdCollection.= $temp->id.',';
+                                                            }
+                                                            
+                                                        @endphp
                                                         <div class="form-group">
-                                                            <label
-                                                                for="type{{ $template->id }}"
-                                                                >Type</label
-                                                            >
-                                                            <select
+                                                            <label for="status{{ $template->id }}">Message Template</label>
+                                                            {{-- <select
                                                                 class="form-control"
-                                                                id="type{{ $template->id }}"
-                                                                name="type"
+                                                                id="messageTemplateId{{ $template->id }}"
+                                                                name="messageTemplateId"
                                                             >
-                                                                @if(strcmp($template->type,"message")==0)
-                                                                <option
-                                                                    value="message"
-                                                                    selected
-                                                                >
-                                                                    Message
-                                                                </option>
-                                                                <option
-                                                                    value="sms"
-                                                                >
-                                                                    SMS
-                                                                </option>
-                                                                <option
-                                                                    value="email"
-                                                                >
-                                                                    Email
-                                                                </option>
-                                                                @elseif(strcmp($template->type,"sms")==0)
-                                                                <option
-                                                                    value="message"
-                                                                >
-                                                                    Message
-                                                                </option>
-                                                                <option
-                                                                    value="sms"
-                                                                    selected
-                                                                >
-                                                                    SMS
-                                                                </option>
-                                                                <option
-                                                                    value="email"
-                                                                >
-                                                                    Email
-                                                                </option>
+                                                                @foreach($messageTemplates as $temp)
+                                                                @if($temp->id==$template->tempId)
+                                                                <option value="{{$temp->id}}" selected>{{$temp->content}}</option>
                                                                 @else
-                                                                <option
-                                                                    value="message"
-                                                                >
-                                                                    Message
-                                                                </option>
-                                                                <option
-                                                                    value="sms"
-                                                                >
-                                                                    SMS
-                                                                </option>
-                                                                <option
-                                                                    value="email"
-                                                                    selected
-                                                                >
-                                                                    Email
-                                                                </option>
-
-                                                                @endif
-                                                            </select>
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label
-                                                                for="status{{ $template->id }}"
-                                                                >Message
-                                                                Category</label
-                                                            >
-                                                            <select
-                                                                class="form-control"
-                                                                id="messageCategoryId{{ $template->id }}"
-                                                                name="messageCategoryId"
-                                                            >
-                                                                @foreach($categories as $category)
-                                                                @if($category->id==$template->catId)
-                                                                <option value="{{$category->id}}" selected>{{$category->title}}</option>
-                                                                @else
-                                                                   <option value="{{$category->id}}">{{$category->title}}</option>
+                                                                   <option value="{{$temp->id}}">{{$temp->content}}</option>
                                                                 @endif
                                                                 @endforeach
+                                                            </select> --}}
+                                                            <select
+                                                                class="form-control"
+                                                                id="messageTemplateEditId"
+                                                                name="messageTemplateId"
+                                                                required
+                                                                onChange="displayMessageContent('{{$messagetTemplateIdCollection}}','messageTemplateEditView','messageTemplateEditId')"
+                                                            >
+                                                                @foreach ($messageTemplates as $temp)
+                                                                    @if($temp->id==$template->tempId)
+                                                                        <option value="{{$temp->id}}" selected>Template-{{ $temp->id }} </option>
+                                                                    @else
+                                                                        <option value="{{$temp->id}}">Template-{{ $temp->id }} </option>
+                                                                    @endif
+                                                                @endforeach
                                                             </select>
+                                                            @foreach ($messageTemplates as $temp)
+                                                                @if($temp->id==$template->tempId)
+                                                                    <lable 
+                                                                    id='messageTemplateEditView{{$temp->id}}' 
+                                                                    style='display:block;margin-top:5px;border:1px dashed darkblue;padding:10px;'>
+                                                                    <h5>Template-{{$temp->id}}</h5>{{$temp->content}}
+                                                                </lable>
+                                                                @else
+                                                                    <lable 
+                                                                    id='messageTemplateEditView{{$temp->id}}' 
+                                                                    style='display:none;margin-top:5px;border:1px dashed darkblue;padding:10px;'>
+                                                                    <h5>Template-{{$temp->id}}</h5>{{$temp->content}}
+                                                                    </lable>
+                                                                @endif
+                                                                {{-- <lable 
+                                                                    id='messageTemplateView{{$temp->id}}' 
+                                                                    style='display:none;margin-top:5px;border:1px dashed darkblue;padding:10px;'>
+                                                                    <h5>Template-{{$temp->id}}</h5>{{$temp->content}}
+                                                                </lable> --}}
+                                                            @endforeach
                                                         </div>
 
                                                         <div class="form-group">
@@ -509,7 +432,7 @@
                                     <form
                                         action="{{
                                             route(
-                                                'message-templates.destroy',
+                                                'response-templates.destroy',
                                                 $template
                                             )
                                         }}"
@@ -548,7 +471,7 @@
             <!-- Add Template Modal -->
             <div
                 class="modal fade"
-                id="addTemplateModel"
+                id="addResponseTemplateModel"
                 tabindex="-1"
                 role="dialog"
                 aria-hidden="true"
@@ -556,8 +479,8 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <form
-                            id="addTemplateForm"
-                            action="{{ route('message-templates.store') }}"
+                            id="addResponseTemplateForm"
+                            action="{{ route('response-templates.store') }}"
                             method="POST"
                             onsubmit="return validateForm()"
                         >
@@ -565,9 +488,9 @@
                             <div class="modal-header">
                                 <h5
                                     class="modal-title"
-                                    id="addTemplateModalLabel"
+                                    id="addResponseTemplateModalLabel"
                                 >
-                                    Add Message Template
+                                    Add Response Template
                                 </h5>
                                 <button
                                     type="button"
@@ -578,7 +501,7 @@
                             </div>
                             <div class="modal-body">
                                 <div class="form-group">
-                                    <label for="content">Message Content</label>
+                                    <label for="content">Response Message Content</label>
                                     <textarea
                                         style="
                                             max-height: 150px;
@@ -597,35 +520,40 @@
                                     @enderror
                                 </div>
 
+                               
                                 <div class="form-group">
-                                    <label for="type">Type</label>
-                                    <select
-                                        class="form-control"
-                                        id="type"
-                                        name="type"
-                                    >
-                                        <option value="message">Message</option>
-                                        <option value="sms">SMS</option>
-                                        <option value="email">Email</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="messageCategoryId"
-                                        >Message Category</label
+                                    <label for="messageTemplateId"
+                                        >Message Template</label
                                     >
                                     <select
+                                        multiple
                                         class="form-control"
-                                        id="messageCategoryId"
-                                        name="messageCategoryId"
+                                        id="messageTemplateId"
+                                        name="messageTemplateId[]"
                                         required
+                                        onChange="displayMessageContent('{{$messagetTemplateIdCollection}}','messageTemplateView','messageTemplateId')"
                                     >
-                                        @foreach ($categories as $category)
-                                        <option value="{{$category->id}}">
-                                            {{$category->title}}
+                                        @foreach ($messageTemplates as $temp)
+                                        <option value="{{$temp->id}}">
+                                            {{-- <button class="btn " 
+                                                type="button" 
+                                                data-bs-toggle="tooltip" 
+                                                data-bs-placement="bottom" 
+                                                title="{{ $temp->content }}">
+                                                Template-{{ $temp->id }} 
+                                            </button> --}}
+                                            Template-{{ $temp->id }} 
+                                            {{-- {{$temp->content}}  --}}
                                         </option>
                                         @endforeach
                                     </select>
+                                    @foreach ($messageTemplates as $temp)
+                                        <lable 
+                                            id='messageTemplateView{{$temp->id}}' 
+                                            style='display:none;margin-top:5px;border:1px dashed darkblue;padding:10px;'>
+                                            <h5>Template-{{$temp->id}}</h5>{{$temp->content}}
+                                        </lable>
+                                    @endforeach
                                 </div>
 
                                 <div class="form-group">
@@ -677,6 +605,18 @@
                     }
 
                     return isValid;
+                }
+                function displayMessageContent(messageTemplate,viewName,selectId)
+                {
+                    let collection= messageTemplate.split(',');
+                    for(let i=0;i<collection.length-1;i++)
+                    {
+                        document.getElementById(viewName+collection[i]).style.display='none';
+                    }
+                    let id =  document.getElementById(selectId).value;
+                    let view = document.getElementById(viewName+id);
+                    view.style.display='block';
+                    // alert(viewName);
                 }
             </script>
         </div>
