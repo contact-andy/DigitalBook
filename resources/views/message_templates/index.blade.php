@@ -87,7 +87,7 @@
                     class="btn btn-lg btn-primary"
                     data-bs-toggle="modal"
                     style="padding: 5px"
-                    data-bs-target="#addCategoryModel"
+                    data-bs-target="#addTemplateModel"
                 >
                     <i class="align-middle" data-lucide="plus">&nbsp;</i> New
                 </button>
@@ -121,6 +121,8 @@
                         <thead>
                             <tr>
                                 <th>Title</th>
+                                <th>Type</th>
+                                <th>Category</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -128,64 +130,21 @@
                         <tbody>
                             @foreach ($templates as $template)
                             <tr>
-                                <td>{{ $template->content }}</td>
+                                <td style="width: 40%">
+                                    {{ $template->content }}
+                                </td>
+                                <td>{{ ucfirst($template->type) }}</td>
+                                <td>{{ $template->title }}</td>
                                 <td>
                                     {{ $template->status ? "Active" : "Inactive" }}
                                 </td>
                                 <td>
-                                    @if ($template->trashed())
-                                    <form
-                                        action="{{ route('message-templates.restore', $template->id) }}"
-                                        method="POST"
-                                        style="display: inline"
-                                    >
-                                        @csrf @method('PATCH')
-                                        <button
-                                            type="submit"
-                                            class="btn btn-success btn-sm"
-                                        >
-                                            Restore
-                                        </button>
-                                    </form>
-                                    <form
-                                        action="{{ route('message-templates.forceDelete', $template->id) }}"
-                                        method="POST"
-                                        style="display: inline"
-                                        onsubmit="return confirm('Are you sure you want to delete this template permanently?');"
-                                    >
-                                        @csrf @method('DELETE')
-                                        <button
-                                            type="submit"
-                                            class="btn btn-danger btn-sm"
-                                        >
-                                            Delete Permanently
-                                        </button>
-                                    </form>
-                                    @else
-
-                                    <!-- <a
-                                            title="View "
-                                            href="{{
-                                                route(
-                                                    'message-templates.show',
-                                                    $template
-                                                )
-                                            }}"
-                                            >
-                                            <button class="btn btn-icon">
-                                                <i
-                                                    class="align-middle"
-                                                    data-lucide="eye"
-                                                ></i>
-                                            </button>
-                                    </a> -->
-
                                     <button
                                         type="button"
                                         title="View"
                                         class="btn btn-sm"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#viewCategoryModal{{ $template->id }}"
+                                        data-bs-target="#viewTemplateModal{{ $template->id }}"
                                     >
                                         <i
                                             class="align-middle"
@@ -198,12 +157,12 @@
                                         ></i>
                                     </button>
 
-                                    <!-- View Category Modal -->
+                                    <!-- View Template Modal -->
                                     <div
                                         class="modal fade"
-                                        id="viewCategoryModal{{ $template->id }}"
+                                        id="viewTemplateModal{{ $template->id }}"
                                         tabindex="-1"
-                                        aria-labelledby="viewCategoryModalLabel{{ $template->id }}"
+                                        aria-labelledby="viewTemplateModalLabel{{ $template->id }}"
                                         aria-hidden="true"
                                     >
                                         <div class="modal-dialog">
@@ -211,9 +170,9 @@
                                                 <div class="modal-header">
                                                     <h5
                                                         class="modal-title"
-                                                        id="viewCategoryModalLabel{{ $template->id }}"
+                                                        id="viewTemplateModalLabel{{ $template->id }}"
                                                     >
-                                                        View Message Category
+                                                        View Message Template
                                                     </h5>
                                                     <button
                                                         type="button"
@@ -225,22 +184,9 @@
                                                 <div class="modal-body">
                                                     <div class="form-group">
                                                         <label
-                                                            for="viewTitle{{ $template->id }}"
-                                                            >Title</label
-                                                        >
-                                                        <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            id="viewTitle{{ $template->id }}"
-                                                            value="{{ $template->content }}"
-                                                            readonly
-                                                        />
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label
                                                             for="viewDescription{{ $template->id }}"
-                                                            >Description</label
+                                                            >Message
+                                                            Content</label
                                                         >
                                                         <textarea
                                                             style="
@@ -248,12 +194,39 @@
                                                                 min-height: 150px;
                                                             "
                                                             class="form-control"
-                                                            id="viewDescription{{ $template->id }}"
+                                                            id="viewContent{{ $template->id }}"
                                                             readonly
                                                             >{{ $template->content }}</textarea
                                                         >
                                                     </div>
 
+                                                    <div class="form-group">
+                                                        <label
+                                                            for="viewTitle{{ $template->id }}"
+                                                            >Type</label
+                                                        >
+                                                        <input
+                                                            type="text"
+                                                            class="form-control"
+                                                            id="viewType{{ $template->id }}"
+                                                            value="{{ $template->type }}"
+                                                            readonly
+                                                        />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label
+                                                            for="viewTitle{{ $template->id }}"
+                                                            >Message
+                                                            Category</label
+                                                        >
+                                                        <input
+                                                            type="text"
+                                                            class="form-control"
+                                                            id="viewType{{ $template->id }}"
+                                                            value="{{ $template->title }}"
+                                                            readonly
+                                                        />
+                                                    </div>
                                                     <div class="form-group">
                                                         <label
                                                             for="viewStatus{{ $template->id }}"
@@ -314,7 +287,7 @@
                                         title="Edit"
                                         class="btn btn-sm"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#editCategoryModal{{ $template->id }}"
+                                        data-bs-target="#editTemplateModal{{ $template->id }}"
                                     >
                                         <i
                                             class="align-middle"
@@ -327,11 +300,11 @@
                                         ></i>
                                     </button>
 
-                                    <!-- Edit Category Modal -->
+                                    <!-- Edit Template Modal -->
 
                                     <div
                                         class="modal fade"
-                                        id="editCategoryModal{{ $template->id }}"
+                                        id="editTemplateModal{{ $template->id }}"
                                         tabindex="-1"
                                         role="dialog"
                                         aria-hidden="true"
@@ -339,7 +312,7 @@
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <form
-                                                    id="editCategoryForm{{ $template->id }}"
+                                                    id="editTemplateForm{{ $template->id }}"
                                                     action="{{ route('message-templates.update', $template->id) }}"
                                                     method="POST"
                                                     onsubmit="return validateEditForm('{{$template->id}}')"
@@ -348,10 +321,10 @@
                                                     <div class="modal-header">
                                                         <h5
                                                             class="modal-title"
-                                                            id="editCategoryModalLabel{{ $template->id }}"
+                                                            id="editTemplateModalLabel{{ $template->id }}"
                                                         >
                                                             Edit Message
-                                                            Category
+                                                            Template
                                                         </h5>
                                                         <button
                                                             type="button"
@@ -363,18 +336,20 @@
                                                     <div class="modal-body">
                                                         <div class="form-group">
                                                             <label
-                                                                for="title{{ $template->id }}"
-                                                                >Title</label
+                                                                for="content{{ $template->id }}"
+                                                                >Content</label
                                                             >
-                                                            <input
-                                                                type="text"
-                                                                class="form-control @error('title') is-invalid @enderror"
-                                                                id="title{{ $template->id }}"
-                                                                name="title"
-                                                                value="{{ old('title', $template->content) }}"
-                                                                required
-                                                            />
-                                                            @error('title')
+                                                            <textarea
+                                                                style="
+                                                                    max-height: 150px;
+                                                                    min-height: 150px;
+                                                                "
+                                                                class="form-control @error('content') is-invalid @enderror"
+                                                                id="content{{ $template->id }}"
+                                                                name="content"
+                                                                >{{ old('content', $template->content) }}</textarea
+                                                            >
+                                                            @error('content')
                                                             <div
                                                                 class="invalid-feedback"
                                                             >
@@ -385,26 +360,89 @@
 
                                                         <div class="form-group">
                                                             <label
-                                                                for="description{{ $template->id }}"
-                                                                >Description</label
+                                                                for="type{{ $template->id }}"
+                                                                >Type</label
                                                             >
-                                                            <textarea
-                                                                style="
-                                                                    max-height: 150px;
-                                                                    min-height: 150px;
-                                                                "
-                                                                class="form-control @error('description') is-invalid @enderror"
-                                                                id="description{{ $template->id }}"
-                                                                name="description"
-                                                                >{{ old('description', $template->content) }}</textarea
+                                                            <select
+                                                                class="form-control"
+                                                                id="type{{ $template->id }}"
+                                                                name="type"
                                                             >
-                                                            @error('description')
-                                                            <div
-                                                                class="invalid-feedback"
+                                                                @if(strcmp($template->type,"message")==0)
+                                                                <option
+                                                                    value="message"
+                                                                    selected
+                                                                >
+                                                                    Message
+                                                                </option>
+                                                                <option
+                                                                    value="sms"
+                                                                >
+                                                                    SMS
+                                                                </option>
+                                                                <option
+                                                                    value="email"
+                                                                >
+                                                                    Email
+                                                                </option>
+                                                                @elseif(strcmp($template->type,"sms")==0)
+                                                                <option
+                                                                    value="message"
+                                                                >
+                                                                    Message
+                                                                </option>
+                                                                <option
+                                                                    value="sms"
+                                                                    selected
+                                                                >
+                                                                    SMS
+                                                                </option>
+                                                                <option
+                                                                    value="email"
+                                                                >
+                                                                    Email
+                                                                </option>
+                                                                @else
+                                                                <option
+                                                                    value="message"
+                                                                >
+                                                                    Message
+                                                                </option>
+                                                                <option
+                                                                    value="sms"
+                                                                >
+                                                                    SMS
+                                                                </option>
+                                                                <option
+                                                                    value="email"
+                                                                    selected
+                                                                >
+                                                                    Email
+                                                                </option>
+
+                                                                @endif
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label
+                                                                for="status{{ $template->id }}"
+                                                                >Message
+                                                                Category</label
                                                             >
-                                                                {{ $message }}
-                                                            </div>
-                                                            @enderror
+                                                            <select
+                                                                class="form-control"
+                                                                id="messageCategoryId{{ $template->id }}"
+                                                                name="messageCategoryId"
+                                                            >
+                                                                @foreach($categories as $category)
+                                                                @if($category->id==$template->catId)
+                                                                <option value="{{$category->id}}" selected>{{$category->title}}</option>
+                                                                @else
+                                                                   <option value="{{$category->id}}" selected>{{$category->title}}</option>
+                                                                @endif
+                                                                @endforeach
+                                                            </select>
                                                         </div>
 
                                                         <div class="form-group">
@@ -495,7 +533,6 @@
                                             ></i>
                                         </button>
                                     </form>
-                                    @endif
                                 </td>
                             </tr>
                             @endforeach
@@ -505,10 +542,10 @@
                 <!-- New Table -->
             </div>
 
-            <!-- Add Category Modal -->
+            <!-- Add Template Modal -->
             <div
                 class="modal fade"
-                id="addCategoryModel"
+                id="addTemplateModel"
                 tabindex="-1"
                 role="dialog"
                 aria-hidden="true"
@@ -516,7 +553,7 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <form
-                            id="addCategoryForm"
+                            id="addTemplateForm"
                             action="{{ route('message-templates.store') }}"
                             method="POST"
                             onsubmit="return validateForm()"
@@ -525,9 +562,9 @@
                             <div class="modal-header">
                                 <h5
                                     class="modal-title"
-                                    id="addCategoryModalLabel"
+                                    id="addTemplateModalLabel"
                                 >
-                                    Add Message Category
+                                    Add Message Template
                                 </h5>
                                 <button
                                     type="button"
@@ -538,16 +575,19 @@
                             </div>
                             <div class="modal-body">
                                 <div class="form-group">
-                                    <label for="title">Title</label>
-                                    <input
-                                        type="text"
-                                        class="form-control @error('title') is-invalid @enderror"
-                                        id="title"
-                                        name="title"
-                                        value="{{ old('title') }}"
+                                    <label for="content">Message Content</label>
+                                    <textarea
+                                        style="
+                                            max-height: 150px;
+                                            min-height: 150px;
+                                        "
+                                        class="form-control @error('content') is-invalid @enderror"
+                                        id="content"
+                                        name="content"
                                         required
-                                    />
-                                    @error('title')
+                                        >{{ old("content") }}</textarea
+                                    >
+                                    @error('content')
                                     <div class="invalid-feedback">
                                         {{ $message }}
                                     </div>
@@ -555,22 +595,34 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="description">Description</label>
-                                    <textarea
-                                        style="
-                                            max-height: 150px;
-                                            min-height: 150px;
-                                        "
-                                        class="form-control @error('description') is-invalid @enderror"
-                                        id="description"
-                                        name="description"
-                                        >{{ old("description") }}</textarea
+                                    <label for="type">Type</label>
+                                    <select
+                                        class="form-control"
+                                        id="type"
+                                        name="type"
                                     >
-                                    @error('description')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                    @enderror
+                                        <option value="message">Message</option>
+                                        <option value="sms">SMS</option>
+                                        <option value="email">Email</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="messageCategoryId"
+                                        >Message Category</label
+                                    >
+                                    <select
+                                        class="form-control"
+                                        id="messageCategoryId"
+                                        name="messageCategoryId"
+                                        required
+                                    >
+                                        @foreach ($categories as $category)
+                                        <option value="{{$category->id}}">
+                                            {{$category->title}}
+                                        </option>
+                                        @endforeach
+                                    </select>
                                 </div>
 
                                 <div class="form-group">
@@ -605,19 +657,19 @@
             <!-- Script to validate the form -->
             <script>
                 function validateForm() {
-                    var title = document.getElementById("title").value;
+                    var content = document.getElementById("content").value;
                     var isValid = true;
 
                     // Clear previous error messages
                     document
-                        .getElementById("title")
+                        .getElementById("content")
                         .classList.remove("is-invalid");
 
                     // Check if title is empty
-                    if (!title) {
+                    if (!content) {
                         isValid = false;
                         document
-                            .getElementById("title")
+                            .getElementById("content")
                             .classList.add("is-invalid");
                     }
 

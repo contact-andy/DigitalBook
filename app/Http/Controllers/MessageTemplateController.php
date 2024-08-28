@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\MessageTemplate;
+use App\Models\MessageCategory;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -14,8 +16,14 @@ class MessageTemplateController extends Controller
      */
     public function index()
     {
-        $templates = MessageTemplate::all();
-        return view('message_templates.index', compact('templates'));
+        $templates = MessageTemplate::select('message_templates.*', 'message_categories.title','message_categories.id as catId')
+        ->join('message_categories', 'message_categories.id', '=', 'message_templates.messageCategoryId')
+        ->get();
+        $categories  = MessageCategory::all();
+        return view('message_templates.index', [
+            'templates'=>$templates,
+            'categories'=>$categories
+        ]);
     }
 
     /**
@@ -28,34 +36,35 @@ class MessageTemplateController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request->all()); // This will dump all request data
+
         $request->validate([
-            'content' => [
-                'required',
-                Rule::unique('message_templates')->where(function ($query) {
-                    return $query->whereNull('deleted_at');
-                }),
-            ],
-            'messageCategoryId' => 'required',
+            'content' => 'required|string',
+            'messageCategoryId' => 'required|string',
             'status' => 'required|boolean',
         ]);
 
-        $categoriesCount = MessageTemplate::where('content',  $request->get('content'))->withTrashed()->count();
-        if($categoriesCount==1){
-            $categories = MessageTemplate::where('content',  $request->get('content'))->withTrashed()->first();
-            $id= $categories->id;
+        $templatesCount = MessageTemplate::where('content',  $request->get('content'))->withTrashed()->count();
+        if($templatesCount==1){
+            $templates = MessageTemplate::where('content',  $request->get('content'))->withTrashed()->first();
+            $id= $templates->id;
             $template = MessageTemplate::withTrashed()->findOrFail($id);
             $template->restore();
             return redirect()->route('message-templates.index')->with('info', 'Message template [RESTORED] successfully!');
         }
 
+        // return $request->get('messageCategoryId');
+
         $template = new MessageTemplate([
             'content' => $request->get('content'),
-            'description' => $request->get('description'),
+            'type' => $request->get('type'),
+            'messageCategoryId' => $request->get('messageCategoryId'),
             'status' => $request->get('status'),
             'created_by' => auth()->id(),
             'updated_by' => auth()->id(),
         ]);
 
+        // return $template;
         if ($template->save()) {
             return redirect()->route('message-templates.index')->with('success', 'Message template [CREATED] successfully!');
         } else {
@@ -68,15 +77,12 @@ class MessageTemplateController extends Controller
      */
     public function show(MessageTemplate $messageTemplate)
     {
-        //
+        return view('message_templates.show', compact('messageTemplate'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(MessageTemplate $messageTemplate)
     {
-        //
+        return view('message_templates.edit', compact('messageTemplate'));
     }
 
     /**
@@ -84,14 +90,28 @@ class MessageTemplateController extends Controller
      */
     public function update(Request $request, MessageTemplate $messageTemplate)
     {
-        //
+        $request->validate([
+            'content' => 'required|string',
+            'messageCategoryId' => 'required|string',
+            'status' => 'required|boolean',
+        ]);
+
+        $messageTemplate->content = $request->get('content');
+        $messageTemplate->type = $request->get('type'); 
+        $messageTemplate->messageCategoryId = $request->get('messageCategoryId'); 
+        $messageTemplate->status = $request->get('status');
+        $messageTemplate->updated_by = auth()->id();
+
+        if ($messageTemplate->save()) {
+            return redirect()->route('message-templates.index')->with('success', 'Message template [UPDATED] successfully!');
+        } else {
+            return redirect()->route('message-templates.index')->with('error', 'Failed to [UPDATE] message template!');
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(MessageTemplate $messageTemplate)
     {
-        //
+        $messageTemplate->delete();
+        return redirect()->route('message-templates.index')->with('success', 'Template [DELETED] successfully.');
     }
 }
