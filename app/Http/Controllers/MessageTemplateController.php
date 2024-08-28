@@ -91,22 +91,43 @@ class MessageTemplateController extends Controller
     public function update(Request $request, MessageTemplate $messageTemplate)
     {
         $request->validate([
-            'content' => 'required|string',
+            'content' => [
+                'required',
+                Rule::unique('message_templates')->whereNull('deleted_at')->ignore($messageTemplate->id),
+            ],
             'messageCategoryId' => 'required|string',
             'status' => 'required|boolean',
         ]);
+        
+        try
+        {
+            $k=MessageTemplate::where('id', $messageTemplate->id)
+            ->update([
+                'content'=>$request->get('content'),
+                'type'=>$request->get('type'),
+                'messageCategoryId'=>$request->get('messageCategoryId'),
+                'status'=>$request->get('status'),
+                'updated_by'=>auth()->id(),
+            ]);
+            // $messageTemplate->content = $request->get('content');
+            // $messageTemplate->type = $request->get('type'); 
+            // $messageTemplate->messageCategoryId = $request->get('messageCategoryId'); 
+            // $messageTemplate->status = $request->get('status');
+            // $messageTemplate->updated_by = auth()->id();
+            //   if ($messageTemplate->save()) {
 
-        $messageTemplate->content = $request->get('content');
-        $messageTemplate->type = $request->get('type'); 
-        $messageTemplate->messageCategoryId = $request->get('messageCategoryId'); 
-        $messageTemplate->status = $request->get('status');
-        $messageTemplate->updated_by = auth()->id();
-
-        if ($messageTemplate->save()) {
-            return redirect()->route('message-templates.index')->with('success', 'Message template [UPDATED] successfully!');
-        } else {
-            return redirect()->route('message-templates.index')->with('error', 'Failed to [UPDATE] message template!');
+            if ($k==1) {
+                return redirect()->route('message-templates.index')->with('success', 'Message template [UPDATED] successfully!');
+            } else {
+                return redirect()->route('message-templates.index')->with('error', 'Failed to [UPDATE] message template!');
+            }
         }
+        catch(\Illuminate\Database\QueryException $e)
+        {
+            return redirect()->route('message-templates.index')->with('error', 'DB ERROR, Failed to [UPDATE] message template!');
+        }
+
+        
     }
 
     public function destroy(MessageTemplate $messageTemplate)

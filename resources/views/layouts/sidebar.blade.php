@@ -9,7 +9,7 @@
             {{--
             <li class="sidebar-header">Navigation</li>
             --}}
-            <li class="sidebar-item">
+            <li class="sidebar-item {{ Request::is('dashboard') ? 'active' : '' }} {{ Request::is('') ? 'active' : '' }}" >
                 <a href="{{ route('dashboard') }}" class="sidebar-link">
                     <i class="align-middle" data-lucide="sliders"></i>
                     <span class="align-middle">Dashboard</span>
@@ -20,7 +20,7 @@
             <li class="sidebar-header">Apps</li>
             --}}
             <!-- add 'active' class attribute value -->
-            <li class="sidebar-item active">
+            <li class="sidebar-item {{ Request::is('message-categories') ? 'active' : '' }}{{ Request::is('message-templates') ? 'active' : '' }}">
                 <a
                     data-bs-target="#messages"
                     data-bs-toggle="collapse"
@@ -35,11 +35,11 @@
                 <!-- add 'show' class attribute value-->
                 <ul
                     id="messages"
-                    class="sidebar-dropdown list-unstyled collapse show"
+                    class="sidebar-dropdown list-unstyled collapse {{ Request::is('message-categories') ? 'show' : '' }}{{ Request::is('message-templates') ? 'show' : '' }}"
                     data-bs-parent="#sidebar"
                 >
                     <!-- add 'active' class attribute value -->
-                    <li class="sidebar-item">
+                    <li class="sidebar-item {{ Request::is('message-categories') ? 'active' : '' }}">
                         <a
                             class="sidebar-link"
                             href="{{ route('message-categories.index') }}"
@@ -51,7 +51,7 @@
                             Message Category
                         </a>
                     </li>
-                    <li class="sidebar-item active">
+                    <li class="sidebar-item {{ Request::is('message-templates') ? 'active' : '' }}">
                         <a
                             class="sidebar-link"
                             href="{{ route('message-templates.index') }}"
@@ -65,46 +65,46 @@
                     </li>
                     <li class="sidebar-item">
                         <a class="sidebar-link" href="/ecommerce-customers">
-                            <i
+                            {{-- <i
                                 class="align-middle"
                                 data-lucide="chevron-last"
-                            ></i>
+                            ></i> --}}
                             Publish Messages
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="/ecommerce-invoice"
-                            ><i
+                        <a class="sidebar-link" href="/ecommerce-invoice">
+                            {{-- <i
                                 class="align-middle"
                                 data-lucide="chevron-last"
-                            ></i>
-                            Response Message Templates</a
-                        >
-                    </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="/ecommerce-pricing"
-                            ><i
-                                class="align-middle"
-                                data-lucide="chevron-last"
-                            ></i>
-                            Automatic Message Templates</a
+                            ></i> --}}
+                            Response Templates</a
                         >
                     </li>
                     <li class="sidebar-item">
                         <a class="sidebar-link" href="/ecommerce-pricing">
-                            <i
+                            {{-- <i
                                 class="align-middle"
                                 data-lucide="chevron-last"
-                            ></i>
+                            ></i> --}}
+                            Automatic Templates</a
+                        >
+                    </li>
+                    <li class="sidebar-item">
+                        <a class="sidebar-link" href="/ecommerce-pricing">
+                            {{-- <i
+                                class="align-middle"
+                                data-lucide="chevron-last"
+                            ></i> --}}
                             Message Approval</a
                         >
                     </li>
                     <li class="sidebar-item">
                         <a class="sidebar-link" href="/ecommerce-pricing">
-                            <i
+                            {{-- <i
                                 class="align-middle"
                                 data-lucide="chevron-last"
-                            ></i>
+                            ></i> --}}
                             Message Response from the System</a
                         >
                     </li>

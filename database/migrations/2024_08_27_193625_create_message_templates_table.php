@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('message_templates', function (Blueprint $table) {
             $table->id();
-            $table->text('content')->unique();
+            $table->string('content')->unique(); //  
+            /* 
+            $table->text('content')->unique(); 
+            it was challemnging to update the cntent with the same conetne but with different case.
+            It was due to the text datatype...
+            */
             $table->string('type'); // Email/ SMS / Mobile Message
             $table->unsignedBigInteger('messageCategoryId');
             $table->boolean('status')->default(1);

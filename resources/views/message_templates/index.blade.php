@@ -196,6 +196,7 @@
                                                             class="form-control"
                                                             id="viewContent{{ $template->id }}"
                                                             readonly
+                                                            required
                                                             >{{ $template->content }}</textarea
                                                         >
                                                     </div>
@@ -439,7 +440,7 @@
                                                                 @if($category->id==$template->catId)
                                                                 <option value="{{$category->id}}" selected>{{$category->title}}</option>
                                                                 @else
-                                                                   <option value="{{$category->id}}" selected>{{$category->title}}</option>
+                                                                   <option value="{{$category->id}}">{{$category->title}}</option>
                                                                 @endif
                                                                 @endforeach
                                                             </select>
