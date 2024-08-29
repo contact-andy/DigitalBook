@@ -23,7 +23,7 @@
         />
         <meta
             name="description"
-            content="Responsive Bootstrap 5 Admin &amp; Dashboard Template"
+            content="Digital Communication Book"
         />
         <meta name="author" content="Bootlab" />
         <title>@yield('title', '') - {{ config("app.name") }}</title>
@@ -46,11 +46,6 @@
         <!-- DataTables JS -->
         <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
         <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
-
-        <link
-            rel="canonical"
-            href="https://appstack.bootlab.io/dashboard-default.html"
-        />
         {{--
         <link rel="shortcut icon" href="img/favicon.ico" />
         --}}
@@ -85,6 +80,8 @@
 
             gtag("config", "G-Q3ZYEKLQ68");
         </script>
+       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
     </head>
 
     <body>

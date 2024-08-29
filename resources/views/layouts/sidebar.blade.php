@@ -9,7 +9,7 @@
             {{--
             <li class="sidebar-header">Navigation</li>
             --}}
-            <li class="sidebar-item {{ Request::is('dashboard') ? 'active' : '' }} {{ Request::is('') ? 'active' : '' }}" >
+            <li class="sidebar-item {{ Request::is('dashboard') ? 'active' : '' }} {{ Request::is('/') ? 'active' : '' }}" >
                 <a href="{{ route('dashboard') }}" class="sidebar-link">
                     <i class="align-middle" data-lucide="sliders"></i>
                     <span class="align-middle">Dashboard</span>
@@ -25,11 +25,7 @@
                 {{ Request::is('message-templates') ? 'active' : '' }}
                 {{ Request::is('response-templates') ? 'active' : '' }}
             ">
-                <a
-                    data-bs-target="#messages"
-                    data-bs-toggle="collapse"
-                    class="sidebar-link collapsed"
-                >
+                <a data-bs-target="#messages" data-bs-toggle="collapse" class="sidebar-link collapsed">
                     <i
                         class="align-middle"
                         data-lucide="message-square-more"
@@ -80,7 +76,7 @@
                         >
                     </li>                    
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="/ecommerce-customers">
+                        <a class="sidebar-link" href="#">
                             {{-- <i
                                 class="align-middle"
                                 data-lucide="chevron-last"
@@ -89,7 +85,7 @@
                         </a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="/ecommerce-pricing">
+                        <a class="sidebar-link" href="#">
                             {{-- <i
                                 class="align-middle"
                                 data-lucide="chevron-last"
@@ -98,7 +94,7 @@
                         >
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="/ecommerce-pricing">
+                        <a class="sidebar-link" href="#">
                             {{-- <i
                                 class="align-middle"
                                 data-lucide="chevron-last"
@@ -107,7 +103,7 @@
                         >
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="/ecommerce-pricing">
+                        <a class="sidebar-link" href="#">
                             {{-- <i
                                 class="align-middle"
                                 data-lucide="chevron-last"
@@ -117,7 +113,7 @@
                     </li>
                 </ul>
             </li>
-            <li class="sidebar-item">
+            <li class="sidebar-item  {{ Request::is('academic-calendars') ? 'active' : '' }}">
                 <a
                     data-bs-target="#calendar"
                     data-bs-toggle="collapse"
@@ -127,25 +123,17 @@
                     <span class="align-middle">Academic Calendar</span>
                 </a>
                 <ul
-                    id="calendar"
-                    class="sidebar-dropdown list-unstyled collapse"
+                    id="calendar" class="sidebar-dropdown list-unstyled collapse 
+                        {{ Request::is('academic-calendars') ? 'show' : '' }}"
                     data-bs-parent="#sidebar"
                 >
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="/projects-overview">
-                            <i
-                                class="align-middle"
-                                data-lucide="chevron-last"
-                            ></i>
+                    <li class="sidebar-item {{ Request::is('academic-calendars') ? 'active' : '' }}"> 
+                        <a class="sidebar-link" href="{{ route('academic-calendars.index') }}">
                             Calendar Manager</a
                         >
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="/projects-details"
-                            ><i
-                                class="align-middle"
-                                data-lucide="chevron-last"
-                            ></i>
+                        <a class="sidebar-link" href="/projects-details">
                             Event Manager</a
                         >
                     </li>

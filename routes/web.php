@@ -4,7 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MessageCategoryController;
 use App\Http\Controllers\MessageTemplateController;
 use App\Http\Controllers\ResponseTemplateController;
-
+use App\Http\Controllers\AcademicCalendarController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -38,6 +38,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('message-categories/{id}/forceDelete', [MessageCategoryController::class, 'forceDelete'])->name('message-categories.forceDelete');
     Route::resource('message-templates', MessageTemplateController::class);
     Route::resource('response-templates', ResponseTemplateController::class);
+    Route::resource('academic-calendars', AcademicCalendarController::class);
+
 });
 
 
