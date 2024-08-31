@@ -8,6 +8,52 @@
             <div class="col-sm-5 col-xl-4">
                 <div class="card">
                     <div class="card-body">
+                        @if(session('success'))
+                            <div class="alert alert-success alert-outline alert-dismissible" role="alert">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                <div class="alert-icon">
+                                    <i class="align-middle" data-lucide="bell"></i>
+                                </div>
+                                <div class="alert-message">
+                                    <strong> {{ session("success") }}</strong>
+                                </div>
+                            </div>
+                        @elseif(session('error'))
+                            <div class="alert alert-danger alert-outline alert-dismissible" role="alert">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                <div class="alert-icon">
+                                    <i class="align-middle" data-lucide="bell"></i>
+                                </div>
+                                <div class="alert-message">
+                                    <strong> {{ session("error") }}</strong>
+                                </div>
+                            </div>
+                        @elseif(session('info'))
+                            <div class="alert alert-info alert-outline alert-dismissible" role="alert">
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" ></button>
+                                <div class="alert-icon">
+                                    <i class="align-middle" data-lucide="bell"></i>
+                                </div>
+                                <div class="alert-message">
+                                    <strong> {{ session("info") }}</strong>
+                                </div>
+                            </div>
+                        @endif 
+                        @if ($errors->any())
+                            <div class="alert alert-danger alert-outline alert-dismissible" role="alert" >
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" ></button>
+                                <div class="alert-icon">
+                                    <i class="align-middle" data-lucide="bell"></i>
+                                </div>
+                                <div class="alert-message">
+                                    <strong>
+                                        @foreach ($errors->all() as $error)
+                                        {{ $error }}
+                                        @endforeach
+                                    </strong>
+                                </div>
+                            </div>
+                        @endif
                         <h6 class="text-uppercase">Recent Events</h6>
                           @foreach ($recentEvents as $rEvent)
                           @php
@@ -15,17 +61,50 @@
                                 $monthNum = $eventDateColl[1];
                                 $dayNum = $eventDateColl[2];
                                 $monthName = strtoupper(date("M", mktime(0, 0, 0, $monthNum, 10)));
+                                $description = $rEvent->description;
+                                if(strlen($description)>50)
+                                $description = substr($rEvent->description,0,50)."...";
                           @endphp
-                            <div class="d-flex">
+                            <div class="d-flex" data-bs-toggle="modal" data-bs-target="#viewCalendarModal{{ $rEvent->id }}" >
                                 <div class="flex-grow-0" style='color:white;background:{{$rEvent->color}};text-align:center;vertical-align:center;padding:5px;margin-right:5px;height:45px;width:50px;'>
                                     <h6 class="m-0" style='color:white'>{{$monthName}}</h6>
                                     <p class=" text-sm" style='font-size:25px;margin-top:-10px;color:white;'>{{$dayNum}}</p>
                                 </div>
                                 <div class="flex-grow-1">
                                     <h6 class="m-0">{{$rEvent->title}}</h6>
-                                    <p class="text-muted text-sm">{{$rEvent->description}}</p>
+                                    <p class="text-muted text-sm">{{$description}}</p>
                                 </div>
-                            </div>                        
+                            </div>     
+                            
+                            {{-- View Calendar Event --}}
+                            <div class="modal fade" id="viewCalendarModal{{ $rEvent->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="d-flex">
+                                            <div class="flex-grow-0" id='dateView' style='color:white;background:{{$rEvent->color}};
+                                            text-align:center;vertical-align:center;padding:5px;margin-right:5px;height:300px;width:200px;display:flex;flex-direction:column;
+                                            justify-content:center'>
+                                                <h6 class="m-0" style='color:#ffffff;font-size:70px;margin-top:50px;' id='monthNameView'>{{$monthName}}</h6>
+                                                <p class=" text-sm" style='font-size:125px;margin-top:-20px;color:white;' id='dayNumView'>{{$dayNum}}</p>
+                                            </div>
+                                            <div class="flex-grow-1"  style='margin:10px'>
+                                                <h3 class="m-0" id='titleView'>{{$rEvent->title}}</h3>
+                                                <div  style='margin:0px'>
+                                                    <p class="text-muted text-sm" style='font-size:14px;margin:0px;'>
+                                                        Start-Date:
+                                                        <b class="m-0" id='startDateView'>{{$rEvent->start_date}}</b>
+                                                    | 
+                                                        End-Date:
+                                                        <b class="m-0" id='endDateView'>{{$rEvent->end_date}}</b>
+                                                    </p>
+                                                </div>
+                                                <p class="text-muted text-sm" style='font-size:14px;' id='descriptionView'>{{$rEvent->description}}</p>
+                                            </div>
+                                        </div> 
+                                    </div>
+                                </div>
+                            </div>
+
                         @endforeach
                     </div>
                 </div>
@@ -116,10 +195,11 @@
                             <div class="form-group">
                                 <label for="end_date">End Date</label>
                                 <input
-                                    type="text"
+                                    type="date"
                                     class="form-control @error('end_date') is-invalid @enderror"
                                     id="end_date"
                                     name="end_date"
+                                    min="{{ old('end_date') }}"
                                     value="{{ old('end_date') }}"
                                     required
                                 />
@@ -166,6 +246,208 @@
                 </div>
             </div>
         </div>
+
+        {{-- Edit Calendar Event --}}
+        <div class="modal fade" id="editCalendarModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="d-flex">
+                        <div class="flex-grow-0" id='editEventView' style='color:white;background:{{$rEvent->color}};
+                        text-align:center;vertical-align:center;padding:5px;margin-right:5px;height:155px;width:200px;'>
+                            <h6 class="m-0" style='color:#ffffff;font-size:50px;' id='monthNameView'>{{$monthName}}</h6>
+                            <p class=" text-sm" style='font-size:85px;margin-top:-20px;color:white;' id='dayNumView'>{{$dayNum}}</p>
+                        </div>
+                        <div class="flex-grow-1"  style='margin:5px'>
+                            <h3 class="m-0" id='editTitleView'>{{$rEvent->title}}</h3>
+                            <div  style='margin:0px'>
+                                <p class="text-muted text-sm" style='font-size:14px;margin:0px;'>
+                                    Start-Date:
+                                    <b class="m-0" id='editStartDateView'>{{$monthName}}</b>
+                                | 
+                                    End-Date:
+                                    <b class="m-0" id='editEndDateView'>{{$monthName}}</b>
+                                </p>
+                            </div>
+                            <p class="text-muted text-sm" style='font-size:14px;' id='editDescriptionView'>{{$rEvent->description}}</p>
+                            <form action="{{route('academic-calendars.destroy',$rEvent)}}" method="POST" style="display: inline"
+                                onsubmit="return confirm('Are you sure you want to delete this event?');"
+                            >
+                                @csrf @method('DELETE')
+                                <input type="hidden" id="deleteId" name="deleteId" required />
+                                <button
+                                    class="btn btn-icon"
+                                    type="submit"
+                                    title="Delete"
+                                    style="padding: 0px"
+                                >
+                                    <i
+                                        class="align-middle"
+                                        data-lucide="trash"
+                                        style="
+                                            color: #d9534f;
+                                            width: 20px;
+                                            height: 20px;
+                                        "
+                                    ></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div> 
+                    <form id="editCalendarForm" method="POST"  action="{{ route('academic-calendars.update', 1) }}">
+                        @csrf @method('PUT')
+                        <div class="modal-header">
+                            <h5
+                                class="modal-title"
+                                id="editCalendarModalLabel"
+                            >
+                                Edit Calendar Event
+                            </h5>
+                            <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                            ></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label
+                                    for="editTitle"
+                                    >Title</label
+                                >
+                                 <input type="hidden" id="editId" name="editId" required />
+                                <input
+                                    type="text"
+                                    class="form-control @error('editTitle') is-invalid @enderror"
+                                    id="editTitle"
+                                    name="editTitle"
+                                    value="{{ old('editTitle', '$category->title') }}"
+                                    required
+                                />
+                                @error('editTitle')
+                                <div
+                                    class="invalid-feedback"
+                                >
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label
+                                    for="editDescription"
+                                    >Description</label
+                                >
+                                <textarea style="max-height: 150px;min-height: 150px;"
+                                    class="form-control @error('editDescription') is-invalid @enderror"
+                                    id="editDescription"
+                                    name="editDescription"
+                                    >{{ old('description', '$category->editDescription') }}</textarea>
+                                @error('editDescription')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="editStart_date">Start Date</label>
+                                <input
+                                    type="text"
+                                    class="form-control @error('editStart_date') is-invalid @enderror"
+                                    id="editStart_date"
+                                    name="editStart_date"
+                                    value="{{ old('editStart_date') }}"
+                                    required
+                                    readonly
+                                />
+                                @error('editStart_date')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="editEnd_date">End Date</label>
+                                <input
+                                    type="date"
+                                    class="form-control @error('editEnd_date') is-invalid @enderror"
+                                    id="editEnd_date"
+                                    name="editEnd_date"
+                                    min="{{ old('editEnd_date') }}"
+                                    value="{{ old('editEnd_date') }}"
+                                    required
+                                />
+                                @error('editEnd_date')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                                @enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="editColor">Color</label>
+                                <input 
+                                    type="color" 
+                                    class="form-control form-control-color" 
+                                    id="editColor" name="editColor" value="#CCCCCC" title="Choose a color">
+                            </div>
+
+                            <div class="form-group">
+                                <label
+                                    for="editStatus"
+                                    >Status</label
+                                >
+                                <select
+                                    class="form-control"
+                                    id="editStatus"
+                                    name="editStatus"
+                                >
+                                    @if(1==1)
+                                    <option
+                                        value="1"
+                                        selected
+                                    >
+                                        Active
+                                    </option>
+                                    <option
+                                        value="0"
+                                    >
+                                        Inactive
+                                    </option>
+                                    @else
+                                    <option
+                                        value="1"
+                                    >
+                                        Active
+                                    </option>
+                                    <option
+                                        value="0"
+                                        selected
+                                    >
+                                        Inactive
+                                    </option>
+                                    @endif
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button
+                                type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal"
+                            >
+                                Close
+                            </button>
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                            >
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
     
 
@@ -195,6 +477,7 @@
                     return {
                         id: event.id,
                         title: event.title,
+                        description: event.description,
                         start: event.start_date,
                         end: event.end_date,
                         // groupId: event.group_id,  // Assuming your event model has these fields
@@ -212,7 +495,38 @@
                     modal.show();
                 },
                 eventClick: function(info) {
-                    alert('Event: ' + info.event.id);
+                    // console.log(info.event.id);
+                    // alert('Event: ' + info.event.backgroundColor);
+                    var modalElement = document.getElementById('editCalendarModal');
+                    var modal = new bootstrap.Modal(modalElement);
+                    
+                    // document.getElementById('editEventView').style.backgroundColor ="red";//info.event.backgroundColor;
+                    let id = info.event.id
+                    let title = info.event.title
+                    let description = info.event.extendedProps.description
+                    let startDate = info.event.startStr;
+                    let maxLength = 150;
+                    // if (description.length > maxLength) {
+                    //     description= description.substring(0, maxLength) + '...';
+                    // } 
+                    let endDate = info.event.end ? info.event.end.toISOString().split('T')[0] : startDate;
+                    let color = info.event.backgroundColor;
+                    document.getElementById("editEventView").style.backgroundColor = info.event.backgroundColor;
+                    document.getElementById('editTitleView').innerText =title ;
+                    document.getElementById('editDescriptionView').innerText =description ;
+                    document.getElementById('editStartDateView').innerText =startDate ;
+                    document.getElementById('editEndDateView').innerText =endDate ;
+
+                    document.getElementById('editTitle').value =title ;
+                    document.getElementById('editDescription').innerText =description ;
+                    document.getElementById('editStart_date').value =startDate ;
+                    document.getElementById('editEnd_date').value =endDate ;
+                    document.getElementById('editColor').value =color ;
+                    document.getElementById('editId').value =id ;
+                    document.getElementById('deleteId').value =id ;
+
+                    // Show the modal
+                    modal.show();
                     // Trigger your custom actions here, e.g., open a modal to edit or delete the event
                 }
 			});

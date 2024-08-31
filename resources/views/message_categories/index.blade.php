@@ -2,16 +2,8 @@
 @section('content')
 <div class="container-fluid p-0">
     @if(session('success'))
-    <div
-        class="alert alert-success alert-outline alert-dismissible"
-        role="alert"
-    >
-        <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="alert"
-            aria-label="Close"
-        ></button>
+    <div class="alert alert-success alert-outline alert-dismissible" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         <div class="alert-icon">
             <i class="align-middle" data-lucide="bell"></i>
         </div>
@@ -20,16 +12,8 @@
         </div>
     </div>
     @elseif(session('error'))
-    <div
-        class="alert alert-danger alert-outline alert-dismissible"
-        role="alert"
-    >
-        <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="alert"
-            aria-label="Close"
-        ></button>
+    <div class="alert alert-danger alert-outline alert-dismissible" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         <div class="alert-icon">
             <i class="align-middle" data-lucide="bell"></i>
         </div>
@@ -39,12 +23,7 @@
     </div>
     @elseif(session('info'))
     <div class="alert alert-info alert-outline alert-dismissible" role="alert">
-        <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="alert"
-            aria-label="Close"
-        ></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" ></button>
         <div class="alert-icon">
             <i class="align-middle" data-lucide="bell"></i>
         </div>
@@ -53,16 +32,8 @@
         </div>
     </div>
     @endif @if ($errors->any())
-    <div
-        class="alert alert-danger alert-outline alert-dismissible"
-        role="alert"
-    >
-        <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="alert"
-            aria-label="Close"
-        ></button>
+    <div class="alert alert-danger alert-outline alert-dismissible" role="alert" >
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" ></button>
         <div class="alert-icon">
             <i class="align-middle" data-lucide="bell"></i>
         </div>
