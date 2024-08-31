@@ -132,44 +132,30 @@
                             Calendar Manager</a
                         >
                     </li>
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="/projects-details">
-                            Event Manager</a
-                        >
-                    </li>
                 </ul>
             </li>
-            <li class="sidebar-item">
+            <li class="sidebar-item  {{ Request::is('surveys') ? 'active' : '' }} {{ Request::is('survey-questions') ? 'active' : '' }}">
                 <a
-                    data-bs-target="#polls"
+                    data-bs-target="#survey"
                     data-bs-toggle="collapse"
                     class="sidebar-link collapsed"
                 >
                     <i class="align-middle" data-lucide="vote"></i>
-                    <span class="align-middle">Poll Manager</span>
+                    <span class="align-middle">Survey Manager</span>
                 </a>
                 <ul
-                    id="polls"
-                    class="sidebar-dropdown list-unstyled collapse"
+                    id="survey"
+                    class="sidebar-dropdown list-unstyled collapse {{ Request::is('surveys') ? 'show' : '' }} {{ Request::is('survey-questions') ? 'show' : '' }}"
                     data-bs-parent="#sidebar"
                 >
-                    <li class="sidebar-item">
-                        <a class="sidebar-link" href="/projects-overview">
-                            <i
-                                class="align-middle"
-                                data-lucide="chevron-last"
-                            ></i>
-                            Create a Poll</a
-                        >
+                    <li class="sidebar-item {{ Request::is('surveys') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('surveys.index') }}">Manage Survey</a>
+                    </li>
+                    <li class="sidebar-item {{ Request::is('survey-questions') ? 'active' : '' }}">
+                        <a class="sidebar-link" href="{{ route('survey-questions.index') }}">Survey Questions</a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="/projects-details"
-                            ><i
-                                class="align-middle"
-                                data-lucide="chevron-last"
-                            ></i>
-                            Manage Polls</a
-                        >
+                        <a class="sidebar-link" href="#">Publish Survey</a>
                     </li>
                 </ul>
             </li>
@@ -188,31 +174,13 @@
                     data-bs-parent="#sidebar"
                 >
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="/projects-overview">
-                            <i
-                                class="align-middle"
-                                data-lucide="chevron-last"
-                            ></i>
-                            Send a Message</a
-                        >
+                        <a class="sidebar-link" href="#"> Send a Message</a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="/projects-details"
-                            ><i
-                                class="align-middle"
-                                data-lucide="chevron-last"
-                            ></i>
-                            Approve a Message</a
-                        >
+                        <a class="sidebar-link" href="#"> Approve a Message</a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="/projects-details"
-                            ><i
-                                class="align-middle"
-                                data-lucide="chevron-last"
-                            ></i>
-                            Manage Message Templates</a
-                        >
+                        <a class="sidebar-link" href="#">Manage Message Templates</a>
                     </li>
                 </ul>
             </li>
@@ -232,58 +200,22 @@
                     data-bs-parent="#sidebar"
                 >
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="/projects-overview">
-                            <i
-                                class="align-middle"
-                                data-lucide="chevron-last"
-                            ></i>
-                            Analytical Report</a
-                        >
+                        <a class="sidebar-link" href="#">Analytical Report</a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="/projects-details"
-                            ><i
-                                class="align-middle"
-                                data-lucide="chevron-last"
-                            ></i>
-                            Messages Report</a
-                        >
+                        <a class="sidebar-link" href="#">Messages Report</a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="/projects-details"
-                            ><i
-                                class="align-middle"
-                                data-lucide="chevron-last"
-                            ></i>
-                            Responses Report</a
-                        >
+                        <a class="sidebar-link" href="#">Responses Report</a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="/projects-details"
-                            ><i
-                                class="align-middle"
-                                data-lucide="chevron-last"
-                            ></i>
-                            Draft Messages</a
-                        >
+                        <a class="sidebar-link" href="#">Draft Messages</a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="/projects-details"
-                            ><i
-                                class="align-middle"
-                                data-lucide="chevron-last"
-                            ></i>
-                            Scheduled Messages</a
-                        >
+                        <a class="sidebar-link" href="#">Scheduled Messages</a>
                     </li>
                     <li class="sidebar-item">
-                        <a class="sidebar-link" href="/projects-details"
-                            ><i
-                                class="align-middle"
-                                data-lucide="chevron-last"
-                            ></i>
-                            Survey Responses</a
-                        >
+                        <a class="sidebar-link" href="#">Survey Responses</a>
                     </li>
                 </ul>
             </li>

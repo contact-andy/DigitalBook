@@ -5,6 +5,9 @@ use App\Http\Controllers\MessageCategoryController;
 use App\Http\Controllers\MessageTemplateController;
 use App\Http\Controllers\ResponseTemplateController;
 use App\Http\Controllers\AcademicCalendarController;
+use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\SurveyQuestionController;
+
 
 use Illuminate\Support\Facades\Route;
 
@@ -39,6 +42,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('message-templates', MessageTemplateController::class);
     Route::resource('response-templates', ResponseTemplateController::class);
     Route::resource('academic-calendars', AcademicCalendarController::class);
+    Route::resource('surveys', SurveyController::class);
+    Route::resource('survey-questions', SurveyQuestionController::class);
+
 
 });
 

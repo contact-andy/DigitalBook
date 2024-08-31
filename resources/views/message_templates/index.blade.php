@@ -326,8 +326,7 @@
                                                             class="modal-title"
                                                             id="editTemplateModalLabel{{ $template->id }}"
                                                         >
-                                                            Edit Message
-                                                            Template
+                                                            Edit Message Template
                                                         </h5>
                                                         <button
                                                             type="button"
