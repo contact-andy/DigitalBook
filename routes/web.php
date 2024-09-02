@@ -4,9 +4,25 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MessageCategoryController;
 use App\Http\Controllers\MessageTemplateController;
 use App\Http\Controllers\ResponseTemplateController;
+use App\Http\Controllers\PublishMessageController;
+use App\Http\Controllers\MessageApprovalController;
+
 use App\Http\Controllers\AcademicCalendarController;
+use App\Http\Controllers\PublishCalendarController;
+
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\SurveyQuestionController;
+use App\Http\Controllers\PublishSurveyController;
+
+use App\Http\Controllers\PermissionGrantController;
+use App\Http\Controllers\UserActivityController;
+
+use App\Http\Controllers\AnalyticalReportController;
+use App\Http\Controllers\MessageReportController;
+use App\Http\Controllers\SurveyResponseReportController;
+
+use App\Http\Controllers\DashboardSettingController;
+use App\Http\Controllers\MessageSettingController;
 
 
 use Illuminate\Support\Facades\Route;
@@ -36,16 +52,31 @@ Route::middleware('auth')->group(function () {
 
 
 Route::middleware('auth')->group(function () {
-    Route::resource('message-categories', MessageCategoryController::class);
     Route::patch('message-categories/{id}/restore', [MessageCategoryController::class, 'restore'])->name('message-categories.restore');
     Route::delete('message-categories/{id}/forceDelete', [MessageCategoryController::class, 'forceDelete'])->name('message-categories.forceDelete');
+    
+    Route::resource('message-categories', MessageCategoryController::class);
     Route::resource('message-templates', MessageTemplateController::class);
     Route::resource('response-templates', ResponseTemplateController::class);
+    Route::resource('publish-messages', PublishMessageController::class);
+    Route::resource('message-approval', PublishMessageController::class);
+
     Route::resource('academic-calendars', AcademicCalendarController::class);
+    Route::resource('publish-calendars', PublishCalendarController::class);
+
     Route::resource('surveys', SurveyController::class);
     Route::resource('survey-questions', SurveyQuestionController::class);
+    Route::resource('publish-survey', PublishSurveyController::class);
 
+    Route::resource('permission-grant', PermissionGrantController::class);
+    Route::resource('user-activities', UserActivityController::class);
 
+    Route::resource('analytical-report', AnalyticalReportController::class);
+    Route::resource('message-report', MessageReportController::class);
+    Route::resource('survey-responses', SurveyResponseReportController::class);
+
+    Route::resource('dashboard-setting', DashboardSettingController::class);
+    Route::resource('message-setting', MessageSettingController::class);
 });
 
 
