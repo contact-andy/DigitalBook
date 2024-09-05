@@ -7,6 +7,7 @@ use App\Http\Controllers\ResponseTemplateController;
 use App\Http\Controllers\PublishMessageController;
 use App\Http\Controllers\MessageApprovalController;
 
+use App\Http\Controllers\EventCategoryController;
 use App\Http\Controllers\AcademicCalendarController;
 use App\Http\Controllers\PublishCalendarController;
 
@@ -61,6 +62,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('publish-messages', PublishMessageController::class);
     Route::resource('message-approval', PublishMessageController::class);
 
+    Route::resource('event-categories', EventCategoryController::class);
     Route::resource('academic-calendars', AcademicCalendarController::class);
     Route::resource('publish-calendars', PublishCalendarController::class);
 

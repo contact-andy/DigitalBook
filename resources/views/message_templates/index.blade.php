@@ -427,22 +427,14 @@
                                                         </div>
 
                                                         <div class="form-group">
-                                                            <label
-                                                                for="status{{ $template->id }}"
-                                                                >Message
-                                                                Category</label
-                                                            >
-                                                            <select
-                                                                class="form-control"
-                                                                id="messageCategoryId{{ $template->id }}"
-                                                                name="messageCategoryId"
-                                                            >
+                                                            <label for="status{{ $template->id }}">Message Category</label>
+                                                            <select class="form-control" id="messageCategoryId{{ $template->id }}" name="messageCategoryId">
                                                                 @foreach($categories as $category)
-                                                                @if($category->id==$template->catId)
-                                                                <option value="{{$category->id}}" selected>{{$category->title}}</option>
-                                                                @else
-                                                                   <option value="{{$category->id}}">{{$category->title}}</option>
-                                                                @endif
+                                                                    @if($category->id==$template->catId)
+                                                                    <option value="{{$category->id}}" selected>{{$category->title}}</option>
+                                                                    @else
+                                                                    <option value="{{$category->id}}">{{$category->title}}</option>
+                                                                    @endif
                                                                 @endforeach
                                                             </select>
                                                         </div>

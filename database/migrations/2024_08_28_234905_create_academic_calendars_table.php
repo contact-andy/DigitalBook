@@ -17,8 +17,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->date('start_date');
             $table->date('end_date');
-            $table->string('color');
             $table->boolean('status')->default(1);
+            $table->unsignedBigInteger('eventCategoryId');
             $table->integer('academicYear');
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -28,6 +28,7 @@ return new class extends Migration
             // Foreign key constraints
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('eventCategoryId')->references('id')->on('event_categories')->onDelete('cascade');
         });
     }
 

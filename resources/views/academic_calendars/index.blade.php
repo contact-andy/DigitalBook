@@ -142,6 +142,16 @@
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
+                                <label for="eventCategoryId">Event Category</label>
+                                <select class="form-control" id="eventCategoryId" name="eventCategoryId" required>
+                                    @foreach ($categories as $category)
+                                        <option value="{{$category->id}}">
+                                            {{$category->title}}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label for="title">Title</label>
                                 <input
                                     type="text"
@@ -209,15 +219,7 @@
                                 </div>
                                 @enderror
                             </div>
-                            <div class="form-group">
-                                <label for="color">Color</label>
-                                <input 
-                                    type="color" 
-                                    class="form-control form-control-color" 
-                                    id="color" name="color" value="#CCCCCC" title="Choose a color">
-                            </div>
-
-                            
+                                      
                             <div class="form-group">
                                 <label for="status">Status</label>
                                 <select
@@ -252,24 +254,24 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="d-flex">
-                        <div class="flex-grow-0" id='editEventView' style='color:white;background:{{$rEvent->color}};
+                        <div class="flex-grow-0" id='editEventView' style='color:white;background:#fff;
                         text-align:center;vertical-align:center;padding:5px;margin-right:5px;height:155px;width:200px;'>
-                            <h6 class="m-0" style='color:#ffffff;font-size:50px;' id='monthNameView'>{{$monthName}}</h6>
-                            <p class=" text-sm" style='font-size:85px;margin-top:-20px;color:white;' id='dayNumView'>{{$dayNum}}</p>
+                            <h6 class="m-0" style='color:#ffffff;font-size:50px;' id='editMonthNameView'>-</h6>
+                            <p class=" text-sm" style='font-size:85px;margin-top:-20px;color:white;' id='editDayNumView'>-</p>
                         </div>
                         <div class="flex-grow-1"  style='margin:5px'>
-                            <h3 class="m-0" id='editTitleView'>{{$rEvent->title}}</h3>
+                            <h3 class="m-0" id='editTitleView'>-</h3>
                             <div  style='margin:0px'>
                                 <p class="text-muted text-sm" style='font-size:14px;margin:0px;'>
                                     Start-Date:
-                                    <b class="m-0" id='editStartDateView'>{{$monthName}}</b>
+                                    <b class="m-0" id='editStartDateView'>-</b>
                                 | 
                                     End-Date:
-                                    <b class="m-0" id='editEndDateView'>{{$monthName}}</b>
+                                    <b class="m-0" id='editEndDateView'>-</b>
                                 </p>
                             </div>
-                            <p class="text-muted text-sm" style='font-size:14px;' id='editDescriptionView'>{{$rEvent->description}}</p>
-                            <form action="{{route('academic-calendars.destroy',$rEvent)}}" method="POST" style="display: inline"
+                            <p class="text-muted text-sm" style='font-size:14px;' id='editDescriptionView'>-</p>
+                            <form action="{{route('academic-calendars.destroy',1)}}" method="POST" style="display: inline"
                                 onsubmit="return confirm('Are you sure you want to delete this event?');"
                             >
                                 @csrf @method('DELETE')
@@ -296,12 +298,7 @@
                     <form id="editCalendarForm" method="POST"  action="{{ route('academic-calendars.update', 1) }}">
                         @csrf @method('PUT')
                         <div class="modal-header">
-                            <h5
-                                class="modal-title"
-                                id="editCalendarModalLabel"
-                            >
-                                Edit Calendar Event
-                            </h5>
+                            <h5 class="modal-title" id="editCalendarModalLabel"> Edit Calendar Event </h5>
                             <button
                                 type="button"
                                 class="btn-close"
@@ -311,11 +308,16 @@
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
-                                <label
-                                    for="editTitle"
-                                    >Title</label
-                                >
-                                 <input type="hidden" id="editId" name="editId" required />
+                                <label for="editEventCategoryId">Event Category</label>
+                                <select class="form-control" id="editEventCategoryId" name="editEventCategoryId">
+                                    @foreach($categories as $category)
+                                        <option value="{{$category->id}}">{{$category->title}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="editTitle">Title</label>
+                                <input type="hidden" id="editId" name="editId" required />
                                 <input
                                     type="text"
                                     class="form-control @error('editTitle') is-invalid @enderror"
@@ -334,10 +336,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label
-                                    for="editDescription"
-                                    >Description</label
-                                >
+                                <label for="editDescription">Description</label>
                                 <textarea style="max-height: 150px;min-height: 150px;"
                                     class="form-control @error('editDescription') is-invalid @enderror"
                                     id="editDescription"
@@ -383,49 +382,12 @@
                                 </div>
                                 @enderror
                             </div>
+                           
                             <div class="form-group">
-                                <label for="editColor">Color</label>
-                                <input 
-                                    type="color" 
-                                    class="form-control form-control-color" 
-                                    id="editColor" name="editColor" value="#CCCCCC" title="Choose a color">
-                            </div>
-
-                            <div class="form-group">
-                                <label
-                                    for="editStatus"
-                                    >Status</label
-                                >
-                                <select
-                                    class="form-control"
-                                    id="editStatus"
-                                    name="editStatus"
-                                >
-                                    @if(1==1)
-                                    <option
-                                        value="1"
-                                        selected
-                                    >
-                                        Active
-                                    </option>
-                                    <option
-                                        value="0"
-                                    >
-                                        Inactive
-                                    </option>
-                                    @else
-                                    <option
-                                        value="1"
-                                    >
-                                        Active
-                                    </option>
-                                    <option
-                                        value="0"
-                                        selected
-                                    >
-                                        Inactive
-                                    </option>
-                                    @endif
+                                <label for="editStatus">Status</label>
+                                <select class="form-control" id="editStatus" name="editStatus">
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
                                 </select>
                             </div>
                         </div>
@@ -455,6 +417,7 @@
     <script>
         // Convert Laravel's PHP event collection to JSON
         let events = @json($calendars);
+        console.log(events)
         let today = new Date();
         let dd = today.getDate()>9?today.getDate():'0'+today.getDate();
         let mm = (today.getMonth() + 1)>9?today.getMonth() + 1:'0'+(today.getMonth() + 1);
@@ -474,13 +437,17 @@
 				},
                 editable: true,
 				events: events.map(function(event) {
+                    let endDate = new Date(event.end_date);
+                    endDate.setDate(endDate.getDate() + 1); // Add 1 day
                     return {
                         id: event.id,
                         title: event.title,
                         description: event.description,
                         start: event.start_date,
-                        end: event.end_date,
-                        // groupId: event.group_id,  // Assuming your event model has these fields
+                        end: endDate.toISOString().split('T')[0],
+                        // end: event.end_date,
+                        catId: event.catId,  // Assuming your event model has these fields
+                        status: event.status,  // Assuming your event model has these fields
                         color: event.color,        // If your events have a color field
                         // Add any other event properties here
                     };
@@ -495,7 +462,7 @@
                     modal.show();
                 },
                 eventClick: function(info) {
-                    // console.log(info.event.id);
+                    console.log(info.event);
                     // alert('Event: ' + info.event.backgroundColor);
                     var modalElement = document.getElementById('editCalendarModal');
                     var modal = new bootstrap.Modal(modalElement);
@@ -504,24 +471,34 @@
                     let id = info.event.id
                     let title = info.event.title
                     let description = info.event.extendedProps.description
+                    let eventCatId = info.event.extendedProps.catId
+                    let status = info.event.extendedProps.status
+                    // console.log(status)
                     let startDate = info.event.startStr;
                     let maxLength = 150;
-                    // if (description.length > maxLength) {
-                    //     description= description.substring(0, maxLength) + '...';
-                    // } 
-                    let endDate = info.event.end ? info.event.end.toISOString().split('T')[0] : startDate;
+                    
+                    let endActualDate = new Date(info.event.end);
+                    endActualDate.setDate(endActualDate.getDate() - 1); // Sub 1 day
+                    
+                    let endDate = info.event.end ? endActualDate.toISOString().split('T')[0] : startDate;
+                    let monthShortName = new Date(startDate).toLocaleString('en-us',{month:'short'});
                     let color = info.event.backgroundColor;
                     document.getElementById("editEventView").style.backgroundColor = info.event.backgroundColor;
-                    document.getElementById('editTitleView').innerText =title ;
-                    document.getElementById('editDescriptionView').innerText =description ;
-                    document.getElementById('editStartDateView').innerText =startDate ;
-                    document.getElementById('editEndDateView').innerText =endDate ;
+                    document.getElementById('editTitleView').innerText =title;
+                    document.getElementById('editDescriptionView').innerText =description;
+                    document.getElementById('editStartDateView').innerText =startDate;
+                    document.getElementById('editEndDateView').innerText =endDate;
+                    document.getElementById('editMonthNameView').innerText =monthShortName;
+                    document.getElementById('editDayNumView').innerText =startDate.split("-")[2];
+                    
+                    
 
                     document.getElementById('editTitle').value =title ;
                     document.getElementById('editDescription').innerText =description ;
                     document.getElementById('editStart_date').value =startDate ;
                     document.getElementById('editEnd_date').value =endDate ;
-                    document.getElementById('editColor').value =color ;
+                    document.getElementById('editEventCategoryId').value =eventCatId;
+                    document.getElementById('editStatus').value =status;
                     document.getElementById('editId').value =id ;
                     document.getElementById('deleteId').value =id ;
 
