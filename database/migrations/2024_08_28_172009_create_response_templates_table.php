@@ -16,13 +16,15 @@ return new class extends Migration
             $table->id();
             $table->string('content'); 
             $table->unsignedBigInteger('messageTemplateId');
-            $table->boolean('status')->default(1);
+            $table->unsignedBigInteger('campusId')->unsigned();
+            $table->boolean('status')->default(0);
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
             // Foreign key constraints
+            $table->foreign('campusId')->references('id')->on('campuses')->onDelete('cascade');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('messageTemplateId')->references('id')->on('message_templates')->onDelete('cascade');

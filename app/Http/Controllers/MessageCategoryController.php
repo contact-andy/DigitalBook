@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\MessageCategory;
+use App\Models\Campuse;
+use App\Models\DcbApplicationPermission;
+use App\Models\DcbApplicationList;
+
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -13,8 +18,23 @@ class MessageCategoryController extends Controller
      */
     public function index()
     {
-        $categories = MessageCategory::all();
-        return view('message_categories.index', compact('categories'));
+        // Fetch Campus Permission
+        $applicationListURL = 'message-categories'; 
+        $applicationList = DcbApplicationList::where('url',$applicationListURL)->first(); 
+        $applicationListId = $applicationList->id;
+        $campusPermissions = DcbApplicationPermission::where('userId', Auth::id())
+        ->where('appId', $applicationListId)->pluck('campusId')->toArray();
+        $campuses =  Campuse::whereIn('id', $campusPermissions)->get();
+
+
+        $categories = MessageCategory::select('message_categories.*', 'campuses.name','campuses.id as campId')
+        ->join('campuses', 'campuses.id', '=', 'message_categories.campusId')
+        ->whereIn('campusId', $campusPermissions)
+        ->get();
+        return view('message_categories.index', [
+            'categories'=>$categories,
+            'campuses'=>$campuses,
+        ]);
         // $search = $request->input('search');
         
         // $categories = MessageCategory::query()
@@ -42,7 +62,7 @@ class MessageCategoryController extends Controller
                 }),
             ],
             'description' => 'nullable|string',
-            'status' => 'required|boolean',
+            'campusId' => 'required',
         ]);
 
         $categoriesCount = MessageCategory::where('title',  $request->get('title'))->withTrashed()->count();
@@ -57,7 +77,7 @@ class MessageCategoryController extends Controller
         $category = new MessageCategory([
             'title' => $request->get('title'),
             'description' => $request->get('description'),
-            'status' => $request->get('status'),
+            'campusId' => $request->get('campusId'),
             'created_by' => auth()->id(),
             'updated_by' => auth()->id(),
         ]);
@@ -87,12 +107,12 @@ class MessageCategoryController extends Controller
                 Rule::unique('message_categories')->whereNull('deleted_at')->ignore($messageCategory->id),
             ],
             'description' => 'nullable|string',
-            'status' => 'required|boolean',
+            'campusId' => 'required',
         ]);
 
         $messageCategory->title = $request->get('title');
         $messageCategory->description = $request->get('description'); // Handle description
-        $messageCategory->status = $request->get('status');
+        $messageCategory->campusId = $request->get('campusId');
         $messageCategory->updated_by = auth()->id();
 
         if ($messageCategory->save()) {

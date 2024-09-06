@@ -124,6 +124,7 @@
                                 <th>Title</th>
                                 <th>Type</th>
                                 <th>Category</th>
+                                <th>Applicabel Grade-Level</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -137,26 +138,13 @@
                                 </td>
                                 <td>{{ ucfirst($template->type) }}</td>
                                 <td>{{ $template->title }}</td>
+                                <td>{{ $template->gradeLevels}}</td>
                                 <td>
-                                    {{ $template->status ? "Active" : "Inactive" }}
+                                    {{ $template->status ? "Approved" : "Not Approved" }}
                                 </td>
                                 <td>
-                                    <button
-                                        type="button"
-                                        title="View"
-                                        class="btn btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#viewTemplateModal{{ $template->id }}"
-                                    >
-                                        <i
-                                            class="align-middle"
-                                            data-lucide="eye"
-                                            style="
-                                                color: #3f80ea;
-                                                width: 20px;
-                                                height: 20px;
-                                            "
-                                        ></i>
+                                    <button type="button" title="View" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#viewTemplateModal{{ $template->id }}">
+                                        <i class="align-middle" data-lucide="eye" style=" color: #3f80ea; width: 20px; height: 20px;"></i>
                                     </button>
 
                                     <!-- View Template Modal -->
@@ -170,26 +158,14 @@
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h5
-                                                        class="modal-title"
-                                                        id="viewTemplateModalLabel{{ $template->id }}"
-                                                    >
+                                                    <h5 class="modal-title" id="viewTemplateModalLabel{{ $template->id }}">
                                                         View Message Template
                                                     </h5>
-                                                    <button
-                                                        type="button"
-                                                        class="btn-close"
-                                                        data-bs-dismiss="modal"
-                                                        aria-label="Close"
-                                                    ></button>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
                                                     <div class="form-group">
-                                                        <label
-                                                            for="viewDescription{{ $template->id }}"
-                                                            >Message
-                                                            Content</label
-                                                        >
+                                                        <label for="viewDescription{{ $template->id }}">Message Content</label>
                                                         <textarea
                                                             style="
                                                                 max-height: 150px;
@@ -204,10 +180,7 @@
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label
-                                                            for="viewTitle{{ $template->id }}"
-                                                            >Type</label
-                                                        >
+                                                        <label for="viewTitle{{ $template->id }}">Type</label>
                                                         <input
                                                             type="text"
                                                             class="form-control"
@@ -217,11 +190,7 @@
                                                         />
                                                     </div>
                                                     <div class="form-group">
-                                                        <label
-                                                            for="viewTitle{{ $template->id }}"
-                                                            >Message
-                                                            Category</label
-                                                        >
+                                                        <label for="viewTitle{{ $template->id }}">Message Category</label>
                                                         <input
                                                             type="text"
                                                             class="form-control"
@@ -231,46 +200,26 @@
                                                         />
                                                     </div>
                                                     <div class="form-group">
-                                                        <label
-                                                            for="viewStatus{{ $template->id }}"
-                                                            >Status</label
+                                                        <label for="viewGradeLevels{{ $template->id }}">Applicable Grade-Level</label>
+                                                        <textarea
+                                                            style=" max-height: 150px; min-height: 150px;"
+                                                            class="form-control"
+                                                            id="viewGradeLevels{{ $template->id }}"
+                                                            readonly
+                                                            required
+                                                            >{{ $template->gradeLevels }}</textarea
                                                         >
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="viewStatus{{ $template->id }}">Status</label>
                                                         <input
                                                             type="text"
                                                             class="form-control"
                                                             id="viewStatus{{ $template->id }}"
-                                                            value="{{ $template->status ? 'Active' : 'Inactive' }}"
+                                                            value="{{ $template->status ? 'Approved' : 'Not Approved' }}"
                                                             readonly
                                                         />
-                                                    </div>
-
-                                                    <!-- <div class="form-group">
-                                                        <label
-                                                            for="viewCreatedBy{{ $template->id }}"
-                                                            >Created By</label
-                                                        >
-                                                        <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            id="viewCreatedBy{{ $template->id }}"
-                                                            value="{{ $template->created_by }}"
-                                                            readonly
-                                                        />
-                                                    </div>
-
-                                                    <div class="form-group">
-                                                        <label
-                                                            for="viewUpdatedBy{{ $template->id }}"
-                                                            >Updated By</label
-                                                        >
-                                                        <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            id="viewUpdatedBy{{ $template->id }}"
-                                                            value="{{ $template->updated_by }}"
-                                                            readonly
-                                                        />
-                                                    </div> -->
+                                                    </div>                                                   
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button
@@ -484,37 +433,29 @@
             </div>
 
             <!-- Add Template Modal -->
-            <div
-                class="modal fade"
-                id="addTemplateModel"
-                tabindex="-1"
-                role="dialog"
-                aria-hidden="true"
-            >
+            <div class="modal fade" id="addTemplateModel" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form
-                            id="addTemplateForm"
-                            action="{{ route('message-templates.store') }}"
-                            method="POST"
-                            onsubmit="return validateForm()"
-                        >
+                        <form id="addTemplateForm" action="{{ route('message-templates.store') }}" method="POST" onsubmit="return validateForm()">
                             @csrf
                             <div class="modal-header">
-                                <h5
-                                    class="modal-title"
-                                    id="addTemplateModalLabel"
-                                >
+                                <h5 class="modal-title" id="addTemplateModalLabel">
                                     Add Message Template
                                 </h5>
-                                <button
-                                    type="button"
-                                    class="btn-close"
-                                    data-bs-dismiss="modal"
-                                    aria-label="Close"
-                                ></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
+                                 <div class="form-group">
+                                    <label for="messageCategoryId">Message Category</label>
+                                    <select class="form-control" id="messageCategoryId" name="messageCategoryId" required>
+                                        @foreach ($categories as $category)
+                                        <option value="{{$category->id}}">
+                                            {{$category->title}}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
                                 <div class="form-group">
                                     <label for="content">Message Content</label>
                                     <textarea
@@ -544,34 +485,21 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="messageCategoryId"
-                                        >Message Category</label
-                                    >
-                                    <select
-                                        class="form-control"
-                                        id="messageCategoryId"
-                                        name="messageCategoryId"
-                                        required
-                                    >
-                                        @foreach ($categories as $category)
-                                        <option value="{{$category->id}}">
-                                            {{$category->title}}
-                                        </option>
+                                    <label for="gradeLevels">Applicable Grade-Levels</label>
+                                    <select multiple class="form-control" id="gradeLevels" name="gradeLevels[]" required>
+                                        @foreach ($gradeLevels as $gradeLevel)
+                                        <option value="{{$gradeLevel->id}}">{{ $gradeLevel->level }} </option>
                                         @endforeach
                                     </select>
                                 </div>
 
-                                <div class="form-group">
+                                {{-- <div class="form-group">
                                     <label for="status">Status</label>
-                                    <select
-                                        class="form-control"
-                                        id="status"
-                                        name="status"
-                                    >
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
+                                    <select class="form-control" id="status" name="status">
+                                        <option value="1">Approved</option>
+                                        <option value="0">Not Approved</option>
                                     </select>
-                                </div>
+                                </div> --}}
                             </div>
                             <div class="modal-footer">
                                 <button

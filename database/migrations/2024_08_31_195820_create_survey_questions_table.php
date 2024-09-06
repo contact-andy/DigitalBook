@@ -17,14 +17,16 @@ return new class extends Migration
             $table->string('question');
             $table->json('options'); // Storing options as a JSON array
             $table->string('type')->default('single-choice'); // single-choice, multiple-choice, etc.
-            $table->boolean('is_required')->default(false);            
-            $table->boolean('status')->default(1); // 1: Active, 0: Inactive
+            $table->boolean('is_required')->default(false);   
+            $table->unsignedBigInteger('campusId')->unsigned();         
+            $table->boolean('status')->default(0); // 1: Active, 0: Inactive
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
             
             // Foreign key constraints
+            $table->foreign('campusId')->references('id')->on('campuses')->onDelete('cascade');
             $table->foreign('survey_id')->references('id')->on('surveys')->onDelete('cascade');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');

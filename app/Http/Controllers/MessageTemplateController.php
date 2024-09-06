@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\MessageTemplate;
 use App\Models\MessageCategory;
+use App\Models\GradeLevel;
+use App\Models\Campuse;
+use App\Models\DcbApplicationPermission;
+use App\Models\DcbApplicationList;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,13 +20,25 @@ class MessageTemplateController extends Controller
      */
     public function index()
     {
+        // Fetch Campus Permission
+        $applicationListURL = 'message-categories'; 
+        $applicationList = DcbApplicationList::where('url',$applicationListURL)->first(); 
+        $applicationListId = $applicationList->id;
+        $campusPermissions = DcbApplicationPermission::where('userId', Auth::id())
+        ->where('appId', $applicationListId)->pluck('campusId')->toArray();
+        $campuses =  Campuse::whereIn('id', $campusPermissions)->get();
+
         $templates = MessageTemplate::select('message_templates.*', 'message_categories.title','message_categories.id as catId')
         ->join('message_categories', 'message_categories.id', '=', 'message_templates.messageCategoryId')
+        ->whereIn('message_templates.campusId', $campusPermissions)
         ->get();
-        $categories  = MessageCategory::all();
+        $categories  = MessageCategory::whereIn('campusId', $campusPermissions)->get();
+        $gradeLevels  = GradeLevel::whereIn('campusId', $campusPermissions)->get();
         return view('message_templates.index', [
             'templates'=>$templates,
-            'categories'=>$categories
+            'categories'=>$categories,
+            'gradeLevels'=>$gradeLevels,
+            'campuses'=>$campuses,
         ]);
     }
 
