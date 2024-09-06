@@ -6,6 +6,7 @@ use App\Http\Controllers\MessageTemplateController;
 use App\Http\Controllers\ResponseTemplateController;
 use App\Http\Controllers\PublishMessageController;
 use App\Http\Controllers\MessageApprovalController;
+use App\Http\Controllers\TemplateApprovalController;
 
 use App\Http\Controllers\EventCategoryController;
 use App\Http\Controllers\AcademicCalendarController;
@@ -15,7 +16,8 @@ use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\SurveyQuestionController;
 use App\Http\Controllers\PublishSurveyController;
 
-use App\Http\Controllers\PermissionGrantController;
+use App\Http\Controllers\ApplicationGrantController;
+use App\Http\Controllers\DataGrantController;
 use App\Http\Controllers\UserActivityController;
 
 use App\Http\Controllers\AnalyticalReportController;
@@ -24,7 +26,7 @@ use App\Http\Controllers\SurveyResponseReportController;
 
 use App\Http\Controllers\DashboardSettingController;
 use App\Http\Controllers\MessageSettingController;
-
+use App\Http\Middleware\CheckApplicationPermission;
 
 use Illuminate\Support\Facades\Route;
 
@@ -56,29 +58,33 @@ Route::middleware('auth')->group(function () {
     Route::patch('message-categories/{id}/restore', [MessageCategoryController::class, 'restore'])->name('message-categories.restore');
     Route::delete('message-categories/{id}/forceDelete', [MessageCategoryController::class, 'forceDelete'])->name('message-categories.forceDelete');
     
-    Route::resource('message-categories', MessageCategoryController::class);
-    Route::resource('message-templates', MessageTemplateController::class);
-    Route::resource('response-templates', ResponseTemplateController::class);
-    Route::resource('publish-messages', PublishMessageController::class);
-    Route::resource('message-approval', PublishMessageController::class);
+    Route::resource('message-categories', MessageCategoryController::class)->middleware('application.permission');
+    Route::resource('message-templates', MessageTemplateController::class)->middleware('application.permission');
+    Route::resource('response-templates', ResponseTemplateController::class)->middleware('application.permission');
+    Route::resource('publish-messages', PublishMessageController::class)->middleware('application.permission');
+    Route::resource('message-approval', MessageApprovalController::class)->middleware('application.permission');
+    Route::resource('template-approval', TemplateApprovalController::class)->middleware('application.permission');
 
-    Route::resource('event-categories', EventCategoryController::class);
-    Route::resource('academic-calendars', AcademicCalendarController::class);
-    Route::resource('publish-calendars', PublishCalendarController::class);
+    Route::resource('event-categories', EventCategoryController::class)->middleware('application.permission');
+    Route::resource('academic-calendars', AcademicCalendarController::class)->middleware('application.permission');
+    Route::resource('publish-calendars', PublishCalendarController::class)->middleware('application.permission');
 
-    Route::resource('surveys', SurveyController::class);
-    Route::resource('survey-questions', SurveyQuestionController::class);
-    Route::resource('publish-survey', PublishSurveyController::class);
+    Route::resource('surveys', SurveyController::class)->middleware('application.permission');
+    Route::resource('survey-questions', SurveyQuestionController::class)->middleware('application.permission');
+    Route::resource('publish-survey', PublishSurveyController::class)->middleware('application.permission');
 
-    Route::resource('permission-grant', PermissionGrantController::class);
-    Route::resource('user-activities', UserActivityController::class);
+    Route::resource('application-grant', ApplicationGrantController::class)->middleware('application.permission');
+    Route::resource('data-grant', DataGrantController::class)->middleware('application.permission');
+    Route::resource('user-activities', UserActivityController::class)->middleware('application.permission');
+    Route::post('/after-user-selection', [ApplicationGrantController::class, 'afterUserSelection'])->name('after-user-selection');
 
-    Route::resource('analytical-report', AnalyticalReportController::class);
-    Route::resource('message-report', MessageReportController::class);
-    Route::resource('survey-responses', SurveyResponseReportController::class);
 
-    Route::resource('dashboard-setting', DashboardSettingController::class);
-    Route::resource('message-setting', MessageSettingController::class);
+    Route::resource('analytical-report', AnalyticalReportController::class)->middleware('application.permission');
+    Route::resource('message-report', MessageReportController::class)->middleware('application.permission');
+    Route::resource('survey-responses', SurveyResponseReportController::class)->middleware('application.permission');
+
+    Route::resource('dashboard-setting', DashboardSettingController::class)->middleware('application.permission');
+    Route::resource('message-setting', MessageSettingController::class)->middleware('application.permission');
 });
 
 

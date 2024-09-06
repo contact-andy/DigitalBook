@@ -361,67 +361,14 @@
                                                         </div>
 
                                                         <div class="form-group">
-                                                            <label
-                                                                for="type{{ $template->id }}"
-                                                                >Type</label
-                                                            >
-                                                            <select
-                                                                class="form-control"
-                                                                id="type{{ $template->id }}"
-                                                                name="type"
-                                                            >
-                                                                @if(strcmp($template->type,"message")==0)
-                                                                <option
-                                                                    value="message"
-                                                                    selected
-                                                                >
-                                                                    Message
-                                                                </option>
-                                                                <option
-                                                                    value="sms"
-                                                                >
-                                                                    SMS
-                                                                </option>
-                                                                <option
-                                                                    value="email"
-                                                                >
-                                                                    Email
-                                                                </option>
-                                                                @elseif(strcmp($template->type,"sms")==0)
-                                                                <option
-                                                                    value="message"
-                                                                >
-                                                                    Message
-                                                                </option>
-                                                                <option
-                                                                    value="sms"
-                                                                    selected
-                                                                >
-                                                                    SMS
-                                                                </option>
-                                                                <option
-                                                                    value="email"
-                                                                >
-                                                                    Email
-                                                                </option>
+                                                            <label for="type{{ $template->id }}">Type(Works for)</label>
+                                                            <select class="form-control" id="type{{ $template->id }}" name="type">
+                                                                @if(strcmp($template->type,"single")==0)
+                                                                    <option value="single" selected>Single</option>
+                                                                    <option value="multiple">Multiple</option>
                                                                 @else
-                                                                <option
-                                                                    value="message"
-                                                                >
-                                                                    Message
-                                                                </option>
-                                                                <option
-                                                                    value="sms"
-                                                                >
-                                                                    SMS
-                                                                </option>
-                                                                <option
-                                                                    value="email"
-                                                                    selected
-                                                                >
-                                                                    Email
-                                                                </option>
-
+                                                                    <option value="single">Single</option>
+                                                                    <option value="multiple" selected>Multiple</option>
                                                                 @endif
                                                             </select>
                                                         </div>
@@ -589,15 +536,10 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="type">Type</label>
-                                    <select
-                                        class="form-control"
-                                        id="type"
-                                        name="type"
-                                    >
-                                        <option value="message">Message</option>
-                                        <option value="sms">SMS</option>
-                                        <option value="email">Email</option>
+                                    <label for="type">Type (Works for)</label>
+                                    <select class="form-control" id="type" name="type">
+                                        <option value="single">Single</option>
+                                        <option value="multiple">Multiple</option>
                                     </select>
                                 </div>
 

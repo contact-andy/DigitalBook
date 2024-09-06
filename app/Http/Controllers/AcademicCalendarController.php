@@ -17,7 +17,8 @@ class AcademicCalendarController extends Controller
 
         $recentEvents = AcademicCalendar::select('academic_calendars.*', 'event_categories.color','event_categories.id as catId')
         ->join('event_categories', 'event_categories.id', '=', 'academic_calendars.eventCategoryId')
-        ->whereDate('start_date','>=', date('Y-m-d'))
+        // ->whereDate('start_date','>=', date('Y-m-d'))
+        ->whereDate('end_date','>=', date('Y-m-d'))
         ->orderBy('start_date', 'ASC')->get();
         $categories = EventCategory::all();
         return view('academic_calendars.index', [

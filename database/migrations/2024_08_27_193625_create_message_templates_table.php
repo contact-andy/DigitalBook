@@ -19,7 +19,7 @@ return new class extends Migration
             it was challemnging to update the cntent with the same conetne but with different case.
             It was due to the text datatype...
             */
-            $table->string('type'); // Email/ SMS / Mobile Message
+            $table->string('type'); // Single User/ Multiple User
             $table->unsignedBigInteger('messageCategoryId');
             $table->boolean('status')->default(1);
             $table->unsignedBigInteger('created_by');
