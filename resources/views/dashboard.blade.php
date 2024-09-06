@@ -43,7 +43,7 @@
                         <div class="col-6">
                             <div class="illustration-text p-3 m-1">
                                 <h4 class="illustration-text">
-                                    Welcome Back, {{ Auth::user()->name }}!
+                                    Welcome Back, {{ Auth::user()->userId }}!
                                 </h4>
                                 <p class="mb-0">DigitalBook Dashboard</p>
                             </div>

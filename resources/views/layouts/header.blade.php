@@ -296,7 +296,7 @@
             width="40"
             height="40"
             />
-            <span>{{ Auth::user()->name }}</span>
+            <span>{{ Auth::user()->userId }}</span>
         </a>
         <div class="dropdown-menu dropdown-menu-end">
             <a class="dropdown-item" href="{{ route('profile.edit') }}"
