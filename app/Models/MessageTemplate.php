@@ -14,6 +14,7 @@ class MessageTemplate extends Model
         'content',
         'type',  
         'messageCategoryId',
+        'campusId',
         'status',
         'gradeLevels',
         'created_by',

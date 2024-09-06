@@ -21,15 +21,16 @@ class MessageTemplateController extends Controller
     public function index()
     {
         // Fetch Campus Permission
-        $applicationListURL = 'message-categories'; 
+        $applicationListURL = 'message-templates'; 
         $applicationList = DcbApplicationList::where('url',$applicationListURL)->first(); 
         $applicationListId = $applicationList->id;
         $campusPermissions = DcbApplicationPermission::where('userId', Auth::id())
         ->where('appId', $applicationListId)->pluck('campusId')->toArray();
         $campuses =  Campuse::whereIn('id', $campusPermissions)->get();
 
-        $templates = MessageTemplate::select('message_templates.*', 'message_categories.title','message_categories.id as catId')
+        $templates = MessageTemplate::select('message_templates.*', 'message_categories.title','message_categories.id as catId','campuses.name',)
         ->join('message_categories', 'message_categories.id', '=', 'message_templates.messageCategoryId')
+        ->join('campuses', 'campuses.id', '=', 'message_categories.campusId')
         ->whereIn('message_templates.campusId', $campusPermissions)
         ->get();
         $categories  = MessageCategory::whereIn('campusId', $campusPermissions)->get();
@@ -57,7 +58,8 @@ class MessageTemplateController extends Controller
         $request->validate([
             'content' => 'required|string',
             'messageCategoryId' => 'required|string',
-            'status' => 'required|boolean',
+            'campusId' => 'required',
+            'gradeLevels' => 'required|array',
         ]);
 
         $templatesCount = MessageTemplate::where('content',  $request->get('content'))->withTrashed()->count();
@@ -75,7 +77,8 @@ class MessageTemplateController extends Controller
             'content' => $request->get('content'),
             'type' => $request->get('type'),
             'messageCategoryId' => $request->get('messageCategoryId'),
-            'status' => $request->get('status'),
+            'campusId' => $request->get('campusId'),
+            'gradeLevels' => json_encode($request->gradeLevels),
             'created_by' => auth()->id(),
             'updated_by' => auth()->id(),
         ]);
