@@ -64,47 +64,38 @@ class ResponseTemplateController extends Controller
 
         // return $request->get('messageTemplateId');
 
-        $campusId = $request->get('campusId');;
-        $checkUniqueCount = ResponseTemplate::where('content',  $request->get('content'))
-        ->where('campusId',  $campusId)
-        ->count();
-        if($checkUniqueCount==0)
+        $messageTemplateIdCollection = $request->get('messageTemplateId');
+        $campusId = $request->get('campusId');
+        // return $messageTemplateIdCollection;
+        $saveCounter=0;
+        for($i=0;$i<sizeof($messageTemplateIdCollection);$i++)
         {
-            $messageTemplateIdCollection = $request->get('messageTemplateId');
-            // return $messageTemplateIdCollection;
-            $saveCounter=0;
-            for($i=0;$i<sizeof($messageTemplateIdCollection);$i++)
+            $messageTemplateId= $messageTemplateIdCollection[$i];
+            $checkUniqueCount = ResponseTemplate::where('content',  $request->get('content'))
+            ->where('messageTemplateId',  $messageTemplateId)
+            ->where('campusId',  $campusId)
+            ->count();
+            if($checkUniqueCount==0)
             {
-                $messageTemplateId= $messageTemplateIdCollection[$i];
-                $checkUniqueCount = ResponseTemplate::where('content',  $request->get('content'))
-                ->where('messageTemplateId',  $messageTemplateId)
-                ->where('campusId',  $campusId)
-                ->count();
-                if($checkUniqueCount==0)
-                {
-                    $template = new ResponseTemplate([
-                        'content' => $request->get('content'),
-                        'messageTemplateId' => $messageTemplateId,
-                        'campusId' => $request->get('campusId'),
-                        'created_by' => auth()->id(),
-                        'updated_by' => auth()->id(),
-                    ]);
-                    if ($template->save()) {
-                        $saveCounter++;
-                    }
+                $template = new ResponseTemplate([
+                    'content' => $request->get('content'),
+                    'messageTemplateId' => $messageTemplateId,
+                    'campusId' => $request->get('campusId'),
+                    'created_by' => auth()->id(),
+                    'updated_by' => auth()->id(),
+                ]);
+                if ($template->save()) {
+                    $saveCounter++;
                 }
             }
-            if ($saveCounter!=0) {
-                return redirect()->route('response-templates.index')->with('success', 'Response template['.$saveCounter.'] [CREATED] successfully!');
-            }
-            else{
-                return redirect()->route('response-templates.index')->with('error', 'Unique response template required. Failed to [CREATE] response template!');
-            }
         }
-        else
-        {
-            return redirect()->route('response-templates.index')->with('error', 'Failed to [CREATE] response template, [REPATED CONTENT]!');
+        if ($saveCounter!=0) {
+            return redirect()->route('response-templates.index')->with('success', 'Response template['.$saveCounter.'] [CREATED] successfully!');
         }
+        else{
+            return redirect()->route('response-templates.index')->with('error', 'Unique response template required. Failed to [CREATE] response template!');
+        }
+        
 
         // $templatesCount = ResponseTemplate::where('content',  $request->get('content'))
         // ->where('messageTemplateId',  $request->get('messageTemplateId'))
