@@ -13,6 +13,7 @@ class ResponseTemplate extends Model
     protected $fillable = [
         'content',
         'messageTemplateId',  
+        'campusId',
         'status',
         'created_by',
         'updated_by',

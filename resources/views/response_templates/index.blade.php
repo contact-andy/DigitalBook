@@ -113,15 +113,19 @@
                         >.
                     </h6>
                 </div> -->
+                @php
+                    $messagetTemplateIdCollection="";
+                    foreach ($messageTemplates as $temp){
+                        $messagetTemplateIdCollection.= $temp->id.',';
+                    }
+                @endphp
                 <div class="card-body">
-                    <table
-                        id="datatables-fixed-header"
-                        class="table table-striped w-100"
-                    >
+                    <table id="datatables-fixed-header" class="table table-striped w-100">
                         <thead>
                             <tr>
                                 <th>Response Message</th>
                                 <th>Response For</th>
+                                <th>Campus</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -141,50 +145,45 @@
                                         Template-{{ $template->tempId }} 
                                     </button>
                                 </td>
+                                <td>{{ $template->name }}</td>
                                 <td>
-                                    {{ $template->status ? "Active" : "Inactive" }}
+                                    @if($template->status)
+                                        <span class='badge text-bg-success'>Approved</span>
+                                    @else
+                                        <span class='badge text-bg-danger'>Not Approved</span>
+                                    @endif
                                 </td>
                                 <td>
-                                    <button
-                                        type="button"
-                                        title="View"
-                                        class="btn btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#viewResponseTemplateModal{{ $template->id }}"
-                                    >
-                                        <i
-                                            class="align-middle"
-                                            data-lucide="eye"
-                                            style="
-                                                color: #3f80ea;
-                                                width: 20px;
-                                                height: 20px;
-                                            "
-                                        ></i>
+                                    <button type="button" title="View" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#viewResponseTemplateModal{{ $template->id }}">
+                                        <i class="align-middle" data-lucide="eye" style="color: #3f80ea;width: 20px;height: 20px;"></i>
                                     </button>
 
                                     <!-- View Template Modal -->
-                                    <div
-                                        class="modal fade"
-                                        id="viewResponseTemplateModal{{ $template->id }}"
-                                        tabindex="-1"
-                                        aria-labelledby="viewResponseTemplateModalLabel{{ $template->id }}"
-                                        aria-hidden="true"
-                                    >
+                                    <div class="modal fade" id="viewResponseTemplateModal{{ $template->id }}" tabindex="-1" aria-labelledby="viewResponseTemplateModalLabel{{ $template->id }}" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h5 class="modal-title" id="viewResponseTemplateModalLabel{{ $template->id }}">
                                                         View Response Template
                                                     </h5>
-                                                    <button
-                                                        type="button"
-                                                        class="btn-close"
-                                                        data-bs-dismiss="modal"
-                                                        aria-label="Close"
-                                                    ></button>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
+                                                    
+                                                    <div class="form-group">
+                                                        <label for="viewCampus{{ $template->id }}">Campus</label>
+                                                        <input type="text" class="form-control" id="viewCampus{{ $template->id }}" value="{{ $template->name }}" readonly/>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="viewTitle{{ $template->id }}">Message Template</label>
+                                                        <textarea style="max-height: 150px;min-height: 150px;"
+                                                            class="form-control"
+                                                            id="viewMessageTemplate{{ $template->id }}"
+                                                            value="{{ $template->tempContent }}"
+                                                            readonly
+                                                            >{{ $template->tempContent }}</textarea
+                                                        >
+                                                    </div>
                                                     <div class="form-group">
                                                         <label for="viewDescription{{ $template->id }}">Response Content</label >
                                                         <textarea style="max-height: 150px;min-height: 150px;"
@@ -196,39 +195,16 @@
                                                         >
                                                     </div>
                                                     <div class="form-group">
-                                                        <label 
-                                                            for="viewTitle{{ $template->id }}"
-                                                            >Message
-                                                            Template</label
-                                                        >
-                                                        <textarea style="max-height: 150px;min-height: 150px;"
-                                                            class="form-control"
-                                                            id="viewMessageTemplate{{ $template->id }}"
-                                                            value="{{ $template->tempContent }}"
-                                                            readonly
-                                                            >{{ $template->tempContent }}</textarea
-                                                        >
+                                                        <label for="viewStatus{{ $template->id }}">Status</label>
+                                                         @if($template->status)
+                                                            <span class='badge text-bg-success'>Approved</span>
+                                                        @else
+                                                            <span class='badge text-bg-danger'>Not Approved</span>
+                                                        @endif
                                                     </div>
-                                                    <div class="form-group">
-                                                        <label
-                                                            for="viewStatus{{ $template->id }}"
-                                                            >Status</label
-                                                        >
-                                                        <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            id="viewStatus{{ $template->id }}"
-                                                            value="{{ $template->status ? 'Active' : 'Inactive' }}"
-                                                            readonly
-                                                        />
-                                                    </div>                                                    
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button
-                                                        type="button"
-                                                        class="btn btn-secondary"
-                                                        data-bs-dismiss="modal"
-                                                    >
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                                         Close
                                                     </button>
                                                 </div>
@@ -236,33 +212,13 @@
                                         </div>
                                     </div>
 
-                                    <button
-                                        type="button"
-                                        title="Edit"
-                                        class="btn btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#editResponseTemplateModal{{ $template->id }}"
-                                    >
-                                        <i
-                                            class="align-middle"
-                                            data-lucide="pencil"
-                                            style="
-                                                color: #e5a54b;
-                                                width: 20px;
-                                                height: 20px;
-                                            "
-                                        ></i>
+                                    <button type="button" title="Edit" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editResponseTemplateModal{{ $template->id }}">
+                                        <i class="align-middle" data-lucide="pencil" style="color: #e5a54b;width: 20px;height: 20px;"></i>
                                     </button>
 
                                     <!-- Edit Template Modal -->
 
-                                    <div
-                                        class="modal fade"
-                                        id="editResponseTemplateModal{{ $template->id }}"
-                                        tabindex="-1"
-                                        role="dialog"
-                                        aria-hidden="true"
-                                    >
+                                    <div class="modal fade" id="editResponseTemplateModal{{ $template->id }}" tabindex="-1" role="dialog" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
                                                 <form
@@ -273,26 +229,24 @@
                                                 >
                                                     @csrf @method('PUT')
                                                     <div class="modal-header">
-                                                        <h5
-                                                            class="modal-title"
-                                                            id="editResponseTemplateModalLabel{{ $template->id }}"
-                                                        >
-                                                            Edit Response
-                                                            Template
+                                                        <h5 class="modal-title" id="editResponseTemplateModalLabel{{ $template->id }}">
+                                                            Edit Response Template
                                                         </h5>
-                                                        <button
-                                                            type="button"
-                                                            class="btn-close"
-                                                            data-bs-dismiss="modal"
-                                                            aria-label="Close"
-                                                        ></button>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body">
                                                         <div class="form-group">
-                                                            <label
-                                                                for="content{{ $template->id }}"
-                                                                >Content</label
-                                                            >
+                                                            <label for="editCampus{{ $template->id }}">Campus</label>
+                                                            <select class="form-control" id="editCampusId{{ $template->id }}" name="campusId">
+                                                                @foreach($campuses as $campus)
+                                                                    @if($template->campusId==$campus->id)
+                                                                        <option value="{{$campus->id}}" selected>{{$campus->name}}</option>
+                                                                    @endif
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="content{{ $template->id }}">Content</label>
                                                             <textarea
                                                                 style="
                                                                     max-height: 150px;
@@ -304,21 +258,12 @@
                                                                 >{{ old('content', $template->content) }}</textarea
                                                             >
                                                             @error('content')
-                                                            <div
-                                                                class="invalid-feedback"
-                                                            >
+                                                            <div class="invalid-feedback">
                                                                 {{ $message }}
                                                             </div>
                                                             @enderror
                                                         </div>
-
-                                                         @php
-                                                            $messagetTemplateIdCollection="";
-                                                            foreach ($messageTemplates as $temp){
-                                                                $messagetTemplateIdCollection.= $temp->id.',';
-                                                            }
-                                                            
-                                                        @endphp
+                                                        
                                                         <div class="form-group">
                                                             <label for="status{{ $template->id }}">Message Template</label>
                                                             {{-- <select
@@ -370,58 +315,13 @@
                                                                 </lable> --}}
                                                             @endforeach
                                                         </div>
-
-                                                        <div class="form-group">
-                                                            <label
-                                                                for="status{{ $template->id }}"
-                                                                >Status</label
-                                                            >
-                                                            <select
-                                                                class="form-control"
-                                                                id="status{{ $template->id }}"
-                                                                name="status"
-                                                            >
-                                                                @if($template->status==1)
-                                                                <option
-                                                                    value="1"
-                                                                    selected
-                                                                >
-                                                                    Active
-                                                                </option>
-                                                                <option
-                                                                    value="0"
-                                                                >
-                                                                    Inactive
-                                                                </option>
-                                                                @else
-                                                                <option
-                                                                    value="1"
-                                                                >
-                                                                    Active
-                                                                </option>
-                                                                <option
-                                                                    value="0"
-                                                                    selected
-                                                                >
-                                                                    Inactive
-                                                                </option>
-                                                                @endif
-                                                            </select>
-                                                        </div>
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <button
-                                                            type="button"
-                                                            class="btn btn-secondary"
-                                                            data-bs-dismiss="modal"
-                                                        >
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                                             Close
                                                         </button>
-                                                        <button
-                                                            type="submit"
-                                                            class="btn btn-primary"
-                                                        >
-                                                            Save Changes
+                                                        <button type="submit" class="btn btn-primary">
+                                                            Save
                                                         </button>
                                                     </div>
                                                 </form>
@@ -429,34 +329,11 @@
                                         </div>
                                     </div>
 
-                                    <form
-                                        action="{{
-                                            route(
-                                                'response-templates.destroy',
-                                                $template
-                                            )
-                                        }}"
-                                        method="POST"
-                                        style="display: inline"
-                                        onsubmit="return confirm('Are you sure you want to delete this template?');"
-                                    >
+                                    <form action="{{route('response-templates.destroy',$template)}}" method="POST" style="display: inline" onsubmit="return confirm('Are you sure you want to delete this template?');">
                                         @csrf @method('DELETE')
 
-                                        <button
-                                            class="btn btn-icon"
-                                            type="submit"
-                                            title="Delete"
-                                            style="padding: 0px"
-                                        >
-                                            <i
-                                                class="align-middle"
-                                                data-lucide="trash"
-                                                style="
-                                                    color: #d9534f;
-                                                    width: 20px;
-                                                    height: 20px;
-                                                "
-                                            ></i>
+                                        <button class="btn btn-icon" type="submit" title="Delete" style="padding: 0px">
+                                            <i class="align-middle" data-lucide="trash" style="color: #d9534f;width: 20px;height: 20px;"></i>
                                         </button>
                                     </form>
                                 </td>
@@ -469,62 +346,29 @@
             </div>
 
             <!-- Add Template Modal -->
-            <div
-                class="modal fade"
-                id="addResponseTemplateModel"
-                tabindex="-1"
-                role="dialog"
-                aria-hidden="true"
-            >
+            <div class="modal fade" id="addResponseTemplateModel" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form
-                            id="addResponseTemplateForm"
-                            action="{{ route('response-templates.store') }}"
-                            method="POST"
-                            onsubmit="return validateForm()"
-                        >
+                        <form id="addResponseTemplateForm" action="{{ route('response-templates.store') }}" method="POST" onsubmit="return validateForm()">
                             @csrf
                             <div class="modal-header">
-                                <h5
-                                    class="modal-title"
-                                    id="addResponseTemplateModalLabel"
-                                >
+                                <h5 class="modal-title" id="addResponseTemplateModalLabel">
                                     Add Response Template
                                 </h5>
-                                <button
-                                    type="button"
-                                    class="btn-close"
-                                    data-bs-dismiss="modal"
-                                    aria-label="Close"
-                                ></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <div class="form-group">
-                                    <label for="content">Response Message Content</label>
-                                    <textarea
-                                        style="
-                                            max-height: 150px;
-                                            min-height: 150px;
-                                        "
-                                        class="form-control @error('content') is-invalid @enderror"
-                                        id="content"
-                                        name="content"
-                                        required
-                                        >{{ old("content") }}</textarea
-                                    >
-                                    @error('content')
-                                    <div class="invalid-feedback">
-                                        {{ $message }}
-                                    </div>
-                                    @enderror
+                                    <label for="campusId">Campus</label>
+                                    <select class="form-control" id="campusId" name="campusId">
+                                        @foreach($campuses as $campus)
+                                            <option value="{{$campus->id}}">{{$campus->name}}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-
-                               
+                                
                                 <div class="form-group">
-                                    <label for="messageTemplateId"
-                                        >Message Template</label
-                                    >
+                                    <label for="messageTemplateId">Message Template</label >
                                     <select
                                         multiple
                                         class="form-control"
@@ -555,25 +399,28 @@
                                         </lable>
                                     @endforeach
                                 </div>
-
                                 <div class="form-group">
-                                    <label for="status">Status</label>
-                                    <select
-                                        class="form-control"
-                                        id="status"
-                                        name="status"
+                                    <label for="content">Response Message Content</label>
+                                    <textarea
+                                        style="
+                                            max-height: 150px;
+                                            min-height: 150px;
+                                        "
+                                        class="form-control @error('content') is-invalid @enderror"
+                                        id="content"
+                                        name="content"
+                                        required
+                                        >{{ old("content") }}</textarea
                                     >
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
+                                    @error('content')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button
-                                    type="button"
-                                    class="btn btn-secondary"
-                                    data-bs-dismiss="modal"
-                                >
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                     Close
                                 </button>
                                 <button type="submit" class="btn btn-primary">
