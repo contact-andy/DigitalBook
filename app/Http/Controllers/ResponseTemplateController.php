@@ -185,7 +185,8 @@ class ResponseTemplateController extends Controller
                     return redirect()->route('response-templates.index')->with('error', 'Unique content required. Failed to [UPDATE] response message template!');
                 }
             }
-            else{
+            else
+            {
                 return redirect()->route('response-templates.index')->with('error', 'Failed to [CREATE] message template, [REPATED CONTENT]!');
             }
              

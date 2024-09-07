@@ -59,78 +59,162 @@
                 </div>
             </div>
         </div>
+        @php
+            $messageCategoryTotal = DB::table('message_categories')->count();
+            $messageCategoryApproved = DB::table('message_categories')->where('status',1)->count();
+            $mcProgressWidth = round(($messageCategoryApproved/$messageCategoryTotal)*100);
+
+            $messageTemplateTotal = DB::table('message_templates')->count();
+            $messageTemplateApproved = DB::table('message_templates')->where('status',1)->count();
+            $mtProgressWidth = round(($messageTemplateApproved/$messageTemplateTotal)*100);
+
+            $responseTemplateTotal = DB::table('response_templates')->count();
+            $responseTemplateApproved = DB::table('response_templates')->where('status',1)->count();
+            $rtProgressWidth = round(($responseTemplateApproved/$responseTemplateTotal)*100);
+
+            
+            
+        @endphp
+
         <div class="col-12 col-sm-6 col-xxl-3 d-flex">
+            <div class="card flex-fill">
+                <div class="card-header">
+                    <div class="card-actions float-end">
+                    </div>
+                    <h5 class="card-title mb-0">Content Approval</h5>
+                </div>
+                <table class="table table-striped my-0">
+                    <thead>
+                        <tr>
+                            <th>Content</th>
+                            <th class="text-end">#Total</th>
+                            <th class="d-none d-xl-table-cell w-75">% Completed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style='width:40%'>Message Category</td>
+                            <td class="text-end">{{$messageCategoryTotal}}</td>
+                            <td class="d-none d-xl-table-cell">
+                                <div class="progress">
+                                    @if ($mcProgressWidth>=75)
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{$mcProgressWidth}}%;" aria-valuenow="{{$mcProgressWidth}}" aria-valuemin="0" aria-valuemax="100">{{$mcProgressWidth}}%</div>                                        
+                                    @elseif ($mcProgressWidth>=50)
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: {{$mcProgressWidth}}%;" aria-valuenow="{{$mcProgressWidth}}" aria-valuemin="0" aria-valuemax="100">{{$mcProgressWidth}}%</div>                                        
+                                    @else
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: {{$mcProgressWidth}}%;" aria-valuenow="{{$mcProgressWidth}}" aria-valuemin="0" aria-valuemax="100">{{$mcProgressWidth}}%</div>                                        
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style='width:40%'>Message Template</td>
+                            <td class="text-end">{{$messageTemplateTotal}}</td>
+                            <td class="d-none d-xl-table-cell">
+                                <div class="progress">
+                                    @if ($mtProgressWidth>=75)
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{$mtProgressWidth}}%;" aria-valuenow="{{$mtProgressWidth}}" aria-valuemin="0" aria-valuemax="100">{{$mtProgressWidth}}%</div>                                        
+                                    @elseif ($mtProgressWidth>=50)
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: {{$mtProgressWidth}}%;" aria-valuenow="{{$mtProgressWidth}}" aria-valuemin="0" aria-valuemax="100">{{$mtProgressWidth}}%</div>                                        
+                                    @else
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: {{$mtProgressWidth}}%;" aria-valuenow="{{$mtProgressWidth}}" aria-valuemin="0" aria-valuemax="100">{{$mtProgressWidth}}%</div>                                        
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                        
+
+                        <tr>
+                            <td style='width:40%'>Response Template</td>
+                            <td class="text-end">{{$responseTemplateTotal}}</td>
+                            <td class="d-none d-xl-table-cell">
+                                <div class="progress">
+                                    @if ($rtProgressWidth>=75)
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{$rtProgressWidth}}%;" aria-valuenow="{{$rtProgressWidth}}" aria-valuemin="0" aria-valuemax="100">{{$rtProgressWidth}}%</div>                                        
+                                    @elseif ($rtProgressWidth>=50)
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: {{$rtProgressWidth}}%;" aria-valuenow="{{$rtProgressWidth}}" aria-valuemin="0" aria-valuemax="100">{{$rtProgressWidth}}%</div>                                        
+                                    @else
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: {{$rtProgressWidth}}%;" aria-valuenow="{{$rtProgressWidth}}" aria-valuemin="0" aria-valuemax="100">{{$rtProgressWidth}}%</div>                                        
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="col-12 col-sm-3 col-xxl-3 d-flex">
             <div class="card flex-fill">
                 <div class="card-body py-4">
                     <div class="d-flex align-items-start">
                         <div class="flex-grow-1">
-                            <h3 class="mb-2">24</h3>
+                            <h3 class="mb-2">{{$messageCategoryTotal}}</h3>
+                            <p class="mb-2">Message Category</p>
+                        </div>
+                        <div class="d-inline-block ms-3">
+                            <div class="stat">
+                                <i class="align-middle text-info" data-lucide="message-square-more"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-3 col-xxl-3 d-flex">
+            <div class="card flex-fill">
+                <div class="card-body py-4">
+                    <div class="d-flex align-items-start">
+                        <div class="flex-grow-1">
+                            <h3 class="mb-2">{{$messageTemplateTotal}}</h3>
                             <p class="mb-2">Message Templates</p>
-                            <div class="mb-0">
+                            {{-- <div class="mb-0">
                                 <span class="badge badge-subtle-success me-2">
-                                    +5.35%
+                                    {{$mtProgressWidth}}%
                                 </span>
-                                <span class="text-muted">Since last week</span>
-                            </div>
+                                <span class="text-muted">Approved</span>
+                            </div> --}}
                         </div>
                         <div class="d-inline-block ms-3">
                             <div class="stat">
-                                <i
-                                    class="align-middle text-success"
-                                    data-lucide="message-square-more"
-                                ></i>
+                                <i class="align-middle text-success" data-lucide="message-square-more"></i>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-12 col-sm-6 col-xxl-3 d-flex">
+        
+        <div class="col-12 col-sm-3 col-xxl-3 d-flex">
             <div class="card flex-fill">
                 <div class="card-body py-4">
                     <div class="d-flex align-items-start">
                         <div class="flex-grow-1">
-                            <h3 class="mb-2">43</h3>
-                            <p class="mb-2">Calendar Events</p>
-                            <div class="mb-0">
-                                <span class="badge badge-subtle-danger me-2">
-                                    -4.25%
-                                </span>
-                                <span class="text-muted">Since last week</span>
-                            </div>
+                            <h3 class="mb-2">{{$responseTemplateTotal}}</h3>
+                            <p class="mb-2">Response Template</p>
                         </div>
                         <div class="d-inline-block ms-3">
                             <div class="stat">
-                                <i
-                                    class="align-middle text-danger"
-                                    data-lucide="calendar-days"
-                                ></i>
+                                <i class="align-middle text-info" data-lucide="vote"></i>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-12 col-sm-6 col-xxl-3 d-flex">
+        <div class="col-12 col-sm-3 col-xxl-3 d-flex">
             <div class="card flex-fill">
                 <div class="card-body py-4">
                     <div class="d-flex align-items-start">
                         <div class="flex-grow-1">
-                            <h3 class="mb-2">18</h3>
-                            <p class="mb-2">Survey Published</p>
-                            <div class="mb-0">
-                                <span class="badge badge-subtle-success me-2">
-                                    +8.65%
-                                </span>
-                                <span class="text-muted">Since last week</span>
-                            </div>
+                            <h3 class="mb-2">{{$responseTemplateTotal}}</h3>
+                            <p class="mb-2">Response Template</p>
                         </div>
                         <div class="d-inline-block ms-3">
                             <div class="stat">
-                                <i
-                                    class="align-middle text-info"
-                                    data-lucide="vote"
-                                ></i>
+                                <i class="align-middle text-info" data-lucide="vote"></i>
                             </div>
                         </div>
                     </div>
