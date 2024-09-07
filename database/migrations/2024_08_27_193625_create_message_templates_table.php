@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('message_templates', function (Blueprint $table) {
             $table->id();
-            $table->string('content')->unique(); //  
+            $table->string('content');  
             /* 
             $table->text('content')->unique(); 
             it was challemnging to update the cntent [with the same content] with different attribute vlue
@@ -26,6 +26,7 @@ return new class extends Migration
             $table->json('gradeLevels'); // Storing grade-levels as a JSON array
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
+            $table->string('comment')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

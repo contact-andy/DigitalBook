@@ -30,6 +30,7 @@ class MessageCategoryController extends Controller
         $categories = MessageCategory::select('message_categories.*', 'campuses.name','campuses.id as campId')
         ->join('campuses', 'campuses.id', '=', 'message_categories.campusId')
         ->whereIn('campusId', $campusPermissions)
+        ->where('created_by', Auth::id())
         ->get();
         return view('message_categories.index', [
             'categories'=>$categories,
@@ -65,28 +66,41 @@ class MessageCategoryController extends Controller
             'campusId' => 'required',
         ]);
 
-        $categoriesCount = MessageCategory::where('title',  $request->get('title'))->withTrashed()->count();
-        if($categoriesCount==1){
-            $categories = MessageCategory::where('title',  $request->get('title'))->withTrashed()->first();
-            $id= $categories->id;
-            $category = MessageCategory::withTrashed()->findOrFail($id);
-            $category->restore();
-            return redirect()->route('message-categories.index')->with('info', 'Message category [RESTORED] successfully!');
+
+        $campusIdCollection = $request->get('campusId');
+        // return $campusIdCollection;
+        $saveCounter=0;
+        for($i=0;$i<sizeof($campusIdCollection);$i++){
+            $campusId= $campusIdCollection[$i];
+            $checkUniqueCount = MessageCategory::where('title',  $request->get('title'))
+            ->where('campusId',  $campusId)
+            ->count();
+            if($checkUniqueCount==0){
+                $category = new MessageCategory([
+                    'title' => $request->get('title'),
+                    'description' => $request->get('description'),
+                    'campusId' => $campusId,
+                    'created_by' => auth()->id(),
+                    'updated_by' => auth()->id(),
+                ]);
+                if ($category->save()) {
+                    $saveCounter++;
+                }
+            }
         }
-
-        $category = new MessageCategory([
-            'title' => $request->get('title'),
-            'description' => $request->get('description'),
-            'campusId' => $request->get('campusId'),
-            'created_by' => auth()->id(),
-            'updated_by' => auth()->id(),
-        ]);
-
-        if ($category->save()) {
+        if ($saveCounter!=0) {
             return redirect()->route('message-categories.index')->with('success', 'Message category [CREATED] successfully!');
         } else {
             return redirect()->route('message-categories.index')->with('error', 'Failed to [CREATE] message category!');
         }
+        // $categoriesCount = MessageCategory::where('title',  $request->get('title'))->withTrashed()->count();
+        // if($categoriesCount==1){
+        //     $categories = MessageCategory::where('title',  $request->get('title'))->withTrashed()->first();
+        //     $id= $categories->id;
+        //     $category = MessageCategory::withTrashed()->findOrFail($id);
+        //     $category->restore();
+        //     return redirect()->route('message-categories.index')->with('info', 'Message category [RESTORED] successfully!');
+        // }        
     }
 
     public function show(MessageCategory $messageCategory)
@@ -102,23 +116,31 @@ class MessageCategoryController extends Controller
     public function update(Request $request, MessageCategory $messageCategory)
     {
         $request->validate([
-            'title' => [
-                'required',
-                Rule::unique('message_categories')->whereNull('deleted_at')->ignore($messageCategory->id),
-            ],
+            'title' =>  'required',
             'description' => 'nullable|string',
             'campusId' => 'required',
         ]);
+        $campusId = $request->get('campusId');;
+        $checkUniqueCount = MessageCategory::where('title',  $request->get('title'))
+        ->where('campusId',  $campusId)
+        ->where('id','!=',  $messageCategory->id)
+        ->count();
+        if($checkUniqueCount==0)
+        {
+            $messageCategory->title = $request->get('title');
+            $messageCategory->description = $request->get('description'); // Handle description
+            $messageCategory->campusId = $request->get('campusId');
+            $messageCategory->updated_by = auth()->id();
 
-        $messageCategory->title = $request->get('title');
-        $messageCategory->description = $request->get('description'); // Handle description
-        $messageCategory->campusId = $request->get('campusId');
-        $messageCategory->updated_by = auth()->id();
-
-        if ($messageCategory->save()) {
-            return redirect()->route('message-categories.index')->with('success', 'Message category [UPDATED] successfully!');
-        } else {
-            return redirect()->route('message-categories.index')->with('error', 'Failed to [UPDATE] message category!');
+            if ($messageCategory->save()) {
+                return redirect()->route('message-categories.index')->with('success', 'Message category [UPDATED] successfully!');
+            } else {
+                return redirect()->route('message-categories.index')->with('error', 'Failed to [UPDATE] message category!');
+            }
+        }
+        else 
+        {
+            return redirect()->route('message-categories.index')->with('error', 'Failed to [UPDATE] message category, [REPATED TITLE]!');
         }
     }
 

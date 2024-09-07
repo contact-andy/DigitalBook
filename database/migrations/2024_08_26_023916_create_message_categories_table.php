@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('message_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('title')->unique();
+            $table->string('title');
             $table->text('description')->nullable();
             $table->unsignedBigInteger('campusId')->unsigned();
             $table->boolean('status')->default(0);
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
+            $table->string('comment')->nullable();
             $table->timestamps();
             $table->softDeletes(); // Add the soft delete column
 

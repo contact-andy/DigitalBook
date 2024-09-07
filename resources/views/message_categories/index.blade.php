@@ -303,8 +303,8 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="campus{{ $category->id }}">Campus</label>
-                                    <select class="form-control" id="campusId{{ $category->id }}" name="campusId">
+                                    <label for="campusId">Campus</label>
+                                    <select class="form-control" id="campusId" name="campusId[]" multiple>
                                         @foreach($campuses as $campus)
                                             <option value="{{$campus->id}}">{{$campus->name}}</option>
                                         @endforeach

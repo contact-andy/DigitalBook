@@ -63,7 +63,9 @@
                     if(session('selectedUser'))
                         $selectedUser = session("selectedUser");
                     $applicationPermissionData = DB::table('dcb_application_permissions')
-                    ->select('appId','campusId')->where('userId','=',$selectedUser)->get();                    
+                    ->select('appId','campusId')->where('userId','=',$selectedUser)->get();    
+                    $userId = "";                
+                    $userEmail = "";                
                 @endphp    
                 <div class="card-header">
                     <h5 class="card-title mb-0">Select User</h5>
@@ -72,18 +74,34 @@
                     <form id="userSelectionForm" name="userSelectionForm" action="{{ route('after-user-selection') }}" method="POST">
                         @csrf
                         <div class="input-group mb-3">
-                        <select class="form-select flex-grow-1" name="userId" id="userId" onChange="userSelectionForm.submit();" >
-                            <option value={{0}}>Select...</option>
-                            @foreach ($users as $user)
-                                @if($user->id == $selectedUser)
-                                    <option selected value="{{$user->id}}">{{$user->name}} - {{$user->email}}</option>
-                                @else
-                                    <option value="{{$user->id}}">{{$user->name}} - {{$user->email}}</option>
-                                @endif
-                            @endforeach
-                        </select>
-                        <button class="btn btn-primary" type="submit">Search!</button>
-                    </div>
+                            <select class="form-select flex-grow-1" name="userId" id="userId" onChange="userSelectionForm.submit();" >
+                                <option value={{0}}>Select...</option>
+                                @foreach ($users as $user)
+                                    @if($user->id == $selectedUser)
+                                        <option selected value="{{$user->id}}">{{$user->userId}} - {{$user->email}}</option>
+                                        @php
+                                            $userId = $user->userId;                
+                                            $userEmail = $user->email;
+                                        @endphp     
+                                    @else
+                                        <option value="{{$user->id}}">{{$user->userId}} - {{$user->email}}</option>
+                                    @endif
+                                @endforeach
+                            </select>
+                            <button class="btn btn-primary" type="submit">Search!</button>
+                        </div>
+                         <div class="input-group mb-3">
+                            @if($selectedUser!=0)
+                                <div style='flex:1;flex-direction:row;justify-content:space-around'>    
+                                    <span class='badge text-bg-primary' style="font-size: 12px;font-weight:300;padding:10px;">
+                                        User Id: {{$userId}}
+                                        <br>
+                                        Email: {{$userEmail}}
+                                    </span>
+                                </div>
+                                
+                            @endif
+                         </div>
                     </form>
                     
                 </div>
@@ -96,10 +114,12 @@
                             <tr>
                                 <th style="width:30%;">
                                     @if($selectedUser!=0)
-                                        <button class="btn btn-primary" type="submit">Save</button>
+                                        <button style='' class="btn btn-primary" type="submit">Save</button>                                        
                                     @endif
                                 </th>
-                                <th style='text-align:center;' colspan="{{sizeof($campuses)}}">Campuses</th>
+                                <th style='text-align:center;' colspan="{{sizeof($campuses)}}">
+                                    Campuses
+                                </th>
                             </tr>
                             <tr>
                                 <th style="width:30%;">Application Name</th>

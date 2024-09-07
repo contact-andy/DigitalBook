@@ -27,16 +27,17 @@ class MessageTemplateController extends Controller
         $campusPermissions = DcbApplicationPermission::where('userId', Auth::id())
         ->where('appId', $applicationListId)->pluck('campusId')->toArray();
         $campuses =  Campuse::whereIn('id', $campusPermissions)->get();
-
         $templates = MessageTemplate::select('message_templates.*', 'message_categories.title','message_categories.id as catId','campuses.name',)
         ->join('message_categories', 'message_categories.id', '=', 'message_templates.messageCategoryId')
         ->join('campuses', 'campuses.id', '=', 'message_categories.campusId')
         ->whereIn('message_templates.campusId', $campusPermissions)
+        ->where('message_templates.created_by', Auth::id())
         ->get();
         $categories  = MessageCategory::whereIn('campusId', $campusPermissions)->get();
         $gradeLevels  = GradeLevel::whereIn('campusId', $campusPermissions)->get();
+        // return $gradeLevels;
         return view('message_templates.index', [
-            'templates'=>$templates,
+            'templates'=>$templates, 
             'categories'=>$categories,
             'gradeLevels'=>$gradeLevels,
             'campuses'=>$campuses,
@@ -62,33 +63,44 @@ class MessageTemplateController extends Controller
             'gradeLevels' => 'required|array',
         ]);
 
-        $templatesCount = MessageTemplate::where('content',  $request->get('content'))->withTrashed()->count();
-        if($templatesCount==1){
-            $templates = MessageTemplate::where('content',  $request->get('content'))->withTrashed()->first();
-            $id= $templates->id;
-            $template = MessageTemplate::withTrashed()->findOrFail($id);
-            $template->restore();
-            return redirect()->route('message-templates.index')->with('info', 'Message template [RESTORED] successfully!');
+        $campusId = $request->get('campusId');;
+        $checkUniqueCount = MessageTemplate::where('content',  $request->get('content'))
+        ->where('campusId',  $campusId)
+        ->count();
+        if($checkUniqueCount==0)
+        {
+            $templatesCount = MessageTemplate::where('content',  $request->get('content'))
+            ->where('campusId',  $campusId)->withTrashed()->count();
+            if($templatesCount==1){
+                $templates = MessageTemplate::where('content',  $request->get('content'))
+                ->where('campusId',  $campusId)->withTrashed()->first();
+                $id= $templates->id;
+                $template = MessageTemplate::withTrashed()->findOrFail($id);
+                $template->restore();
+                return redirect()->route('message-templates.index')->with('info', 'Message template [RESTORED] successfully!');
+            }
+            $template = new MessageTemplate([
+                'content' => $request->get('content'),
+                'type' => $request->get('type'),
+                'messageCategoryId' => $request->get('messageCategoryId'),
+                'campusId' => $request->get('campusId'),
+                'gradeLevels' => json_encode($request->gradeLevels),
+                'created_by' => auth()->id(),
+                'updated_by' => auth()->id(),
+            ]);
+
+            // return $template;
+            if ($template->save()) {
+                return redirect()->route('message-templates.index')->with('success', 'Message template [CREATED] successfully!');
+            } else {
+                return redirect()->route('message-templates.index')->with('error', 'Failed to [CREATE] message template!');
+            }
+        }
+        else 
+        {
+            return redirect()->route('message-templates.index')->with('error', 'Failed to [CREATE] message template, [REPATED CONTENT]!');
         }
 
-        // return $request->get('messageCategoryId');
-
-        $template = new MessageTemplate([
-            'content' => $request->get('content'),
-            'type' => $request->get('type'),
-            'messageCategoryId' => $request->get('messageCategoryId'),
-            'campusId' => $request->get('campusId'),
-            'gradeLevels' => json_encode($request->gradeLevels),
-            'created_by' => auth()->id(),
-            'updated_by' => auth()->id(),
-        ]);
-
-        // return $template;
-        if ($template->save()) {
-            return redirect()->route('message-templates.index')->with('success', 'Message template [CREATED] successfully!');
-        } else {
-            return redirect()->route('message-templates.index')->with('error', 'Failed to [CREATE] message template!');
-        }
     }
 
     /**
@@ -110,36 +122,41 @@ class MessageTemplateController extends Controller
     public function update(Request $request, MessageTemplate $messageTemplate)
     {
         $request->validate([
-            'content' => [
-                'required',
-                Rule::unique('message_templates')->whereNull('deleted_at')->ignore($messageTemplate->id),
-            ],
+            'content' => 'required',
             'messageCategoryId' => 'required|string',
-            'status' => 'required|boolean',
+            'campusId' => 'required|boolean',
         ]);
         
         try
         {
-            $k=MessageTemplate::where('id', $messageTemplate->id)
-            ->update([
-                'content'=>$request->get('content'),
-                'type'=>$request->get('type'),
-                'messageCategoryId'=>$request->get('messageCategoryId'),
-                'status'=>$request->get('status'),
-                'updated_by'=>auth()->id(),
-            ]);
-            // $messageTemplate->content = $request->get('content');
-            // $messageTemplate->type = $request->get('type'); 
-            // $messageTemplate->messageCategoryId = $request->get('messageCategoryId'); 
-            // $messageTemplate->status = $request->get('status');
-            // $messageTemplate->updated_by = auth()->id();
-            //   if ($messageTemplate->save()) {
+            $campusId = $request->get('campusId');;
+            $checkUniqueCount = MessageTemplate::where('content',  $request->get('content'))
+            ->where('campusId',  $campusId)
+            ->where('id','!=',  $messageTemplate->id)
+            ->count();
+            if($checkUniqueCount==0)
+            {
+                $k=MessageTemplate::where('id', $messageTemplate->id)
+                ->update([
+                    'content'=>$request->get('content'),
+                    'type'=>$request->get('type'),
+                    'messageCategoryId'=>$request->get('messageCategoryId'),
+                    'campusId'=>$request->get('campusId'),
+                    'gradeLevels' => json_encode($request->gradeLevels),
+                    'updated_by'=>auth()->id(),
+                ]);
 
-            if ($k==1) {
-                return redirect()->route('message-templates.index')->with('success', 'Message template [UPDATED] successfully!');
-            } else {
-                return redirect()->route('message-templates.index')->with('error', 'Failed to [UPDATE] message template!');
+                if ($k==1) {
+                    return redirect()->route('message-templates.index')->with('success', 'Message template [UPDATED] successfully!');
+                } else {
+                    return redirect()->route('message-templates.index')->with('error', 'Failed to [UPDATE] message template!');
+                }
             }
+            else 
+            {
+                return redirect()->route('message-templates.index')->with('error', 'Failed to [CREATE] message template, [REPATED CONTENT]!');
+            }
+            
         }
         catch(\Illuminate\Database\QueryException $e)
         {

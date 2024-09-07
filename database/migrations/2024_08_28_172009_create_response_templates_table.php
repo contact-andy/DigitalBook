@@ -20,6 +20,7 @@ return new class extends Migration
             $table->boolean('status')->default(0);
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
+            $table->string('comment')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

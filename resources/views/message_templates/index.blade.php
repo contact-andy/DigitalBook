@@ -93,7 +93,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Title</th>
-                                <th>Type</th>
+                                <th>Campus</th>
                                 <th>Category</th>
                                 <th>Applicabel Grade-Level</th>
                                 <th>Status</th>
@@ -106,10 +106,28 @@
                                 <td>{{ $template->id}}</td>
                                 <td style="width: 40%">
                                     {{ $template->content }}
+                                    <br>
+                                    <span class='badge text-bg-info'>{{ ucfirst($template->type) }} {{ $template->type=='single'?' student':' students' }}</span>
                                 </td>
-                                <td>{{ ucfirst($template->type) }}</td>
+                                <td>{{ $template->name }}</td>
                                 <td>{{ $template->title }}</td>
-                                <td>{{ $template->gradeLevels}}</td>
+                                <td>
+                                    {{-- {{ $template->gradeLevels}} --}}
+                                    @php
+                                        $gLevels = json_decode($template->gradeLevels, true);
+                                        $gLevelArray = array();
+                                        foreach($gLevels as $gLevel){
+                                            foreach ($gradeLevels as $gradeLevel)
+                                            if($gLevel==$gradeLevel->id){
+                                                $gLevelArray[] =$gradeLevel->level;
+                                                break;
+                                            }
+                                        }
+                                        $jsonString = json_encode($gLevelArray);
+                                        echo $jsonString;
+                                    @endphp
+
+                                </td>
                                <td>
                                     @if($template->status)
                                         <span class='badge text-bg-success'>Approved</span>
@@ -133,6 +151,11 @@
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
+                                                    
+                                                    <div class="form-group">
+                                                        <label for="viewCampus{{ $template->id }}">Campus</label>
+                                                        <input type="text" class="form-control" id="viewCampus{{ $template->id }}" value="{{ $template->name }}" readonly/>
+                                                    </div>
                                                     <div class="form-group">
                                                         <label for="viewTitle{{ $template->id }}">Message Category</label>
                                                         <input
@@ -159,30 +182,26 @@
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label for="viewTitle{{ $template->id }}">Type</label>
+                                                        <label for="viewTitle{{ $template->id }}">Type(Works for **** student(s))</label>
                                                         <input
                                                             type="text"
                                                             class="form-control"
                                                             id="viewType{{ $template->id }}"
-                                                            value="{{ $template->type }}"
+                                                            value="{{ ucfirst($template->type) }}"
                                                             readonly
                                                         />
                                                     </div>
                                                     
                                                     <div class="form-group">
                                                         <label for="viewGradeLevels{{ $template->id }}">Applicable Grade-Level</label>
-                                                        <textarea
-                                                            style=" max-height: 50px; min-height: 50px;"
+                                                        <input
+                                                            type="text"
                                                             class="form-control"
                                                             id="viewGradeLevels{{ $template->id }}"
+                                                            value="{{ $jsonString }}"
                                                             readonly
-                                                            required
-                                                            >{{ $template->gradeLevels }}</textarea
-                                                        >
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="viewCampus{{ $template->id }}">Campus</label>
-                                                        <input type="text" class="form-control" id="viewCampus{{ $template->id }}" value="{{ $template->name }}" readonly/>
+                                                        />
+                                                        
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="viewStatus{{ $template->id }}">Status</label>
@@ -214,33 +233,40 @@
                                     <div class="modal fade" id="editTemplateModal{{ $template->id }}" tabindex="-1" role="dialog" aria-hidden="true">
                                         <div class="modal-dialog">
                                             <div class="modal-content">
-                                                <form
-                                                    id="editTemplateForm{{ $template->id }}"
-                                                    action="{{ route('message-templates.update', $template->id) }}"
-                                                    method="POST"
-                                                    onsubmit="return validateEditForm('{{$template->id}}')"
-                                                >
+                                                <form id="editTemplateForm{{ $template->id }}" action="{{ route('message-templates.update', $template->id) }}" method="POST" onsubmit="return validateEditForm('{{$template->id}}')">
                                                     @csrf @method('PUT')
                                                     <div class="modal-header">
-                                                        <h5
-                                                            class="modal-title"
-                                                            id="editTemplateModalLabel{{ $template->id }}"
-                                                        >
+                                                        <h5 class="modal-title" id="editTemplateModalLabel{{ $template->id }}">
                                                             Edit Message Template
                                                         </h5>
-                                                        <button
-                                                            type="button"
-                                                            class="btn-close"
-                                                            data-bs-dismiss="modal"
-                                                            aria-label="Close"
-                                                        ></button>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body">
+                                                         @php
+                                                            $selectedCampusId = $template->campusId;
+                                                        @endphp
                                                         <div class="form-group">
-                                                            <label
-                                                                for="content{{ $template->id }}"
-                                                                >Content</label
-                                                            >
+                                                            <label for="campusId">Campus</label>
+                                                            <select class="form-control" id="editCampusId" name="campusId">
+                                                                @foreach($campuses as $campus)
+                                                                    @if($selectedCampusId==$campus->id)
+                                                                        <option value="{{$campus->id}}">{{$campus->name}}</option>
+                                                                    @endif
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="editMessageCategoryId">Message Category</label>
+                                                            <select class="form-control" id="editMessageCategoryId" name="messageCategoryId" required>
+                                                                @foreach ($categories as $category)
+                                                                    @if($selectedCampusId==$category->campusId)
+                                                                        <option value="{{$category->id}}">{{$category->title}}</option>
+                                                                    @endif
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="content{{ $template->id }}">Content</label>
                                                             <textarea
                                                                 style="
                                                                     max-height: 150px;
@@ -272,57 +298,29 @@
                                                                 @endif
                                                             </select>
                                                         </div>
-
                                                         <div class="form-group">
-                                                            <label for="status{{ $template->id }}">Message Category</label>
-                                                            <select class="form-control" id="messageCategoryId{{ $template->id }}" name="messageCategoryId">
-                                                                @foreach($categories as $category)
-                                                                    @if($category->id==$template->catId)
-                                                                    <option value="{{$category->id}}" selected>{{$category->title}}</option>
-                                                                    @else
-                                                                    <option value="{{$category->id}}">{{$category->title}}</option>
+                                                            <label for="editGradeLevels">Applicable Grade-Levels</label>
+                                                            <select multiple class="form-control" id="editGradeLevels" name="gradeLevels[]" required>
+                                                                @foreach ($gradeLevels as $gradeLevel)
+                                                                    @if($selectedCampusId==$gradeLevel->campusId)
+                                                                        @php
+                                                                            $check = 0;
+                                                                        @endphp
+                                                                        @foreach ($gLevels as $gLevel)
+                                                                            @if ($gLevel == $gradeLevel->id)
+                                                                                <option value="{{$gradeLevel->id}}" selected>{{ $gradeLevel->level }}</option>
+                                                                                {{$check=1}}
+                                                                                @break;
+                                                                            @endif
+                                                                        @endforeach
+                                                                        @if ($check==0)
+                                                                            <option value="{{$gradeLevel->id}}">{{ $gradeLevel->level }}</option>
+                                                                        @endif
                                                                     @endif
                                                                 @endforeach
                                                             </select>
                                                         </div>
-
-                                                        <div class="form-group">
-                                                            <label
-                                                                for="status{{ $template->id }}"
-                                                                >Status</label
-                                                            >
-                                                            <select
-                                                                class="form-control"
-                                                                id="status{{ $template->id }}"
-                                                                name="status"
-                                                            >
-                                                                @if($template->status==1)
-                                                                <option
-                                                                    value="1"
-                                                                    selected
-                                                                >
-                                                                    Active
-                                                                </option>
-                                                                <option
-                                                                    value="0"
-                                                                >
-                                                                    Inactive
-                                                                </option>
-                                                                @else
-                                                                <option
-                                                                    value="1"
-                                                                >
-                                                                    Active
-                                                                </option>
-                                                                <option
-                                                                    value="0"
-                                                                    selected
-                                                                >
-                                                                    Inactive
-                                                                </option>
-                                                                @endif
-                                                            </select>
-                                                        </div>
+                                                        
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button
@@ -372,13 +370,28 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
+                                @php
+                                    $selectedCampusId =0;
+                                    foreach($campuses as $campus){
+                                        $selectedCampusId =  $campus->id;
+                                        break;
+                                    }
+                                @endphp
+                                <div class="form-group">
+                                    <label for="campusId">Campus</label>
+                                    <select class="form-control" id="campusId" name="campusId" onchange="onCampusChange(this.value)">
+                                        @foreach($campuses as $campus)
+                                            <option value="{{$campus->id}}">{{$campus->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                                  <div class="form-group">
                                     <label for="messageCategoryId">Message Category</label>
                                     <select class="form-control" id="messageCategoryId" name="messageCategoryId" required>
                                         @foreach ($categories as $category)
-                                        <option value="{{$category->id}}">
-                                            {{$category->title}}
-                                        </option>
+                                            @if($selectedCampusId==$category->campusId)
+                                                <option value="{{$category->id}}">{{$category->title}}</option>
+                                            @endif
                                         @endforeach
                                     </select>
                                 </div>
@@ -412,37 +425,18 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="campus{{ $category->id }}">Campus</label>
-                                    <select class="form-control" id="campusId{{ $category->id }}" name="campusId">
-                                        @foreach($campuses as $campus)
-                                            <option value="{{$campus->id}}">{{$campus->name}}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
                                     <label for="gradeLevels">Applicable Grade-Levels</label>
                                     <select multiple class="form-control" id="gradeLevels" name="gradeLevels[]" required>
                                         @foreach ($gradeLevels as $gradeLevel)
-                                        <option value="{{$gradeLevel->id}}">{{ $gradeLevel->level }} </option>
+                                            @if($selectedCampusId==$gradeLevel->campusId)
+                                                <option value="{{$gradeLevel->id}}">{{ $gradeLevel->level }}</option>
+                                            @endif
                                         @endforeach
                                     </select>
                                 </div>
-
-                                {{-- <div class="form-group">
-                                    <label for="status">Status</label>
-                                    <select class="form-control" id="status" name="status">
-                                        <option value="1">Approved</option>
-                                        <option value="0">Not Approved</option>
-                                    </select>
-                                </div> --}}
                             </div>
                             <div class="modal-footer">
-                                <button
-                                    type="button"
-                                    class="btn btn-secondary"
-                                    data-bs-dismiss="modal"
-                                >
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                     Close
                                 </button>
                                 <button type="submit" class="btn btn-primary">
@@ -474,6 +468,36 @@
                     }
 
                     return isValid;
+                }
+
+                let allCampuses = @json($campuses);
+                let allCategory = @json($categories);
+                let allGradeLevel = @json($gradeLevels);
+                console.log(allGradeLevel);
+                function onCampusChange(campId){
+                    console.log(campId)
+                    // let campId = document.getElementById('campusId').value;                    
+                    // console.log(campId);
+                    const messageCategoryId = document.getElementById('messageCategoryId');
+                    messageCategoryId.innerHTML = '';
+                    const categoryOptions = allCategory.map(category => {
+                        if(category.campusId == campId){
+                            return `<option value="${category.id}">${category.title}</option>`;
+                        }
+                    }).join(''); 
+                    // console.log(categoryOptions)
+                    messageCategoryId.innerHTML = categoryOptions;
+                    
+                    const gradeLevels = document.getElementById('gradeLevels');
+                    gradeLevels.innerHTML = '';
+                    const gradeLevelOptions = allGradeLevel.map(gLevel => {
+                        if(gLevel.campusId == campId){
+                            return `<option value="${gLevel.id}">${gLevel.level}</option>`;
+                        }
+                    }).join(''); 
+                    gradeLevels.innerHTML = gradeLevelOptions;
+                    
+
                 }
             </script>
         </div>

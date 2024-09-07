@@ -25,7 +25,7 @@ class ApplicationGrantController extends Controller
     {
         $applicationList = DcbApplicationList::all();
         $campuses = Campuse::all();
-        $users = User::all();
+        $users = User::where('userType','!=', 1)->where('userType','!=', 2)->get();
         return view('application_grant.index', [
             'applicationList'=>$applicationList,
             'campuses'=>$campuses,
