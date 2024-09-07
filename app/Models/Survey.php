@@ -13,6 +13,7 @@ class Survey extends Model
     protected $fillable = [
         'title',
         'description',  
+        'campusId',
         'status',
         'created_by',
         'updated_by',

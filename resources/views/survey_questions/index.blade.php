@@ -75,12 +75,16 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
+                    @php
+                        $counter =1 ;
+                    @endphp
                     <table id="datatables-fixed-header" lass="table table-striped w-100">
                         <thead>
                             <tr>
                                 <th>Survey Title</th>
                                 <th>Question</th>
                                 <th>Options</th>
+                                <th>Campus</th>
                                 <th>Status</th>
                                 <th>Action</th>
                             </tr>
@@ -91,8 +95,13 @@
                                 <td>{{ $surveyQuestion->title }}</td>
                                 <td>{{ $surveyQuestion->question }}</td>
                                 <td>{{ $surveyQuestion->options }}</td>
+                                <td>{{ $surveyQuestion->name }}</td>
                                 <td>
-                                    {{ $surveyQuestion->status ? "Active" : "Inactive" }}
+                                    @if($surveyQuestion->status)
+                                        <span class='badge text-bg-success'>Approved</span>
+                                    @else
+                                        <span class='badge text-bg-danger'>Not Approved</span>
+                                    @endif
                                 </td>
                                 <td>
                                     <button type="button" title="View" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#viewSurveyQuestionModel{{ $surveyQuestion->id }}">
@@ -115,6 +124,11 @@
                                                     ></button>
                                                 </div>
                                                 <div class="modal-body">
+                                                    
+                                                     <div class="form-group">
+                                                        <label for="viewCampus{{ $surveyQuestion->id }}">Campus</label>
+                                                        <input type="text" class="form-control" id="viewCampus{{ $surveyQuestion->id }}" value="{{ $surveyQuestion->name }}" readonly/>
+                                                    </div>
                                                     <div class="form-group">
                                                         <label for="viewTitle{{ $surveyQuestion->id }}">Survey Title</label>
                                                         <input type="text" class="form-control" id="viewTitle{{ $surveyQuestion->id }}" value="{{ $surveyQuestion->title }}" readonly/>
@@ -153,25 +167,19 @@
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label for="viewType{{ $surveyQuestion->id }}">Status</label>
-                                                        <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            id="viewType{{ $surveyQuestion->id }}"
-                                                            value="{{ $surveyQuestion->type ? 'Active' : 'Inactive' }}"
-                                                            readonly
-                                                        />
+                                                        <label for="viewStatus{{ $surveyQuestion->id }}">Status</label>
+                                                         @if($surveyQuestion->status)
+                                                            <span class='badge text-bg-success'>Approved</span>
+                                                        @else
+                                                            <span class='badge text-bg-danger'>Not Approved</span>
+                                                        @endif
                                                     </div>
                                                     
 
                                                     
                                                 </div>
                                                 <div class="modal-footer">
-                                                    <button
-                                                        type="button"
-                                                        class="btn btn-secondary"
-                                                        data-bs-dismiss="modal"
-                                                    >
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                                         Close
                                                     </button>
                                                 </div>
@@ -179,162 +187,162 @@
                                         </div>
                                     </div>
 
-                                    <button type="button" title="Edit" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editSurveyQuestionModel{{ $surveyQuestion->id }}">
-                                        <i class="align-middle" data-lucide="pencil" style=" color: #e5a54b; width: 20px; height: 20px;"></i>
-                                    </button>
+                                    @if($surveyQuestion->status)
+                                        <button type="button" title="Edit" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editSurveyQuestionModel{{ $surveyQuestion->id }}">
+                                            <i class="align-middle" data-lucide="pencil" style=" color: #e5a54b; width: 20px; height: 20px;"></i>
+                                        </button>
 
-                                    <!-- Edit Survey Modal -->
+                                        <!-- Edit Survey Modal -->
 
-                                    <div class="modal fade" id="editSurveyQuestionModel{{ $surveyQuestion->id }}" tabindex="-1" role="dialog" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <form
-                                                    id="editSurveyForm{{ $surveyQuestion->id }}"
-                                                    action="{{ route('survey-questions.update', $surveyQuestion->id) }}"
-                                                    method="POST"
-                                                    onsubmit="return validateEditForm('{{$surveyQuestion->id}}')"
-                                                >
-                                                    @csrf @method('PUT')
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="editSurveyQuestionModelLabel{{ $surveyQuestion->id }}">
-                                                            Edit Survey Questions
-                                                        </h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="form-group">
-                                                            <label for="survey_id{{ $surveyQuestion->id }}" >Survey Title</label>
-                                                            <select class="form-control" id="survey_id{{ $surveyQuestion->id }}" name="survey_id" >
-                                                                @foreach($surveyCategory as $category)
-                                                                    @if($category->id==$surveyQuestion->survey_id)
-                                                                        <option value="{{$category->id}}" selected>{{$category->title}}</option>
-                                                                    @else
-                                                                        <option value="{{$category->id}}">{{$category->title}}</option>
-                                                                    @endif
-                                                                @endforeach
-                                                            </select>
+                                        <div class="modal fade" id="editSurveyQuestionModel{{ $surveyQuestion->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form
+                                                        id="editSurveyForm{{ $surveyQuestion->id }}"
+                                                        action="{{ route('survey-questions.update', $surveyQuestion->id) }}"
+                                                        method="POST"
+                                                        onsubmit="return validateEditForm('{{$surveyQuestion->id}}')"
+                                                    >
+                                                        @csrf @method('PUT')
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="editSurveyQuestionModelLabel{{ $surveyQuestion->id }}">
+                                                                Edit Survey Questions
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                         </div>
-
-                                                        <div class="form-group">
-                                                            <label for="question{{ $surveyQuestion->id }}">Question</label>
-                                                            <input
-                                                                type="text"
-                                                                class="form-control @error('question') is-invalid @enderror"
-                                                                id="title{{ $surveyQuestion->id }}"
-                                                                name="question"
-                                                                value="{{ old('question', $surveyQuestion->question) }}"
-                                                                required
-                                                            />
-                                                            @error('question')
-                                                            <div class="invalid-feedback">
-                                                                {{ $message }}
-                                                            </div>
-                                                            @enderror
-                                                        </div>
-
-                                                        
-                                                        <div class="form-group">
-                                                            <label for="options{{ $surveyQuestion->id }}">Options</label>
-                                                            @php
-                                                                $options = json_decode($surveyQuestion->options, true);
-                                                                $counter =1 ;
-                                                            @endphp
-                                                            @foreach($options as $option)
-                                                                <div class="input-group mb-2" id="option{{$counter}}{{ $surveyQuestion->id }}">
-                                                                    <input type="text" class="form-control" name="options[]" value="{{ $option }}" required>
-                                                                    <div class="input-group-append">
-                                                                        <button class="btn btn-danger remove-option" type="button" onclick="editRemoveOption('option{{$counter}}', '{{ $surveyQuestion->id }}')">&times;</button>
-                                                                    </div>
+                                                        <div class="modal-body">
+                                                            <div class="form-group">
+                                                                    <label for="campus{{ $surveyQuestion->id }}">Campus</label>
+                                                                    <select class="form-control" id="campusId{{ $surveyQuestion->id }}" name="campusId">
+                                                                        @foreach($campuses as $campus)
+                                                                            @if($surveyQuestion->campusId==$campus->id)
+                                                                                <option value="{{$campus->id}}" selected>{{$campus->name}}</option>
+                                                                                @break;
+                                                                            @endif
+                                                                        @endforeach
+                                                                    </select>
                                                                 </div>
+                                                            <div class="form-group">
+                                                                <label for="survey_id{{ $surveyQuestion->id }}" >Survey Title</label>
+                                                                <select class="form-control" id="survey_id{{ $surveyQuestion->id }}" name="survey_id" >
+                                                                    @foreach($surveyCategory as $category)
+                                                                        @if($category->id==$surveyQuestion->survey_id)
+                                                                            <option value="{{$category->id}}" selected>{{$category->title}}</option>
+                                                                        @else
+                                                                            <option value="{{$category->id}}">{{$category->title}}</option>
+                                                                        @endif
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="question{{ $surveyQuestion->id }}">Question</label>
+                                                                <input
+                                                                    type="text"
+                                                                    class="form-control @error('question') is-invalid @enderror"
+                                                                    id="title{{ $surveyQuestion->id }}"
+                                                                    name="question"
+                                                                    value="{{ old('question', $surveyQuestion->question) }}"
+                                                                    required
+                                                                />
+                                                                @error('question')
+                                                                <div class="invalid-feedback">
+                                                                    {{ $message }}
+                                                                </div>
+                                                                @enderror
+                                                            </div>
+
+                                                            
+                                                            <div class="form-group">
+                                                                <label for="options{{ $surveyQuestion->id }}">Options</label>
                                                                 @php
-                                                                    $counter++;
+                                                                    $options = json_decode($surveyQuestion->options, true);
+                                                                    $counter =1 ;
                                                                 @endphp
-                                                            @endforeach
-                                                            <div id="additional-options-edit{{ $surveyQuestion->id }}"></div>
-                                                            <button type="button" class="btn btn-secondary mt-2" id="add-option-edit" onclick="editAddNewOption('{{ $surveyQuestion->id }}')">Add Another Option</button>
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-                                                            <label for="type{{ $surveyQuestion->id }}">Type</label>
-                                                            <select class="form-control" id="type{{ $surveyQuestion->id }}" name="type">
-                                                                @if(strcmp($surveyQuestion->type,'single-choice')==0)
-                                                                    <option value="single-choice" selected>Single Choice</option>
-                                                                    <option value="multiple-choice">Multiple Choice</option>
-                                                                @else
-                                                                    <option value="single-choice">Single Choice</option>
-                                                                    <option value="multiple-choice" selected>Multiple Choice</option>
-                                                                @endif
-                                                            </select>
-                                                        </div>
+                                                                @foreach($options as $option)
+                                                                    <div class="input-group mb-2" id="option{{$counter}}{{ $surveyQuestion->id }}">
+                                                                        <input type="text" class="form-control" name="options[]" value="{{ $option }}" required>
+                                                                        <div class="input-group-append">
+                                                                            <button class="btn btn-danger remove-option" type="button" onclick="editRemoveOption('option{{$counter}}', '{{ $surveyQuestion->id }}')">&times;</button>
+                                                                        </div>
+                                                                    </div>
+                                                                    @php
+                                                                        $counter++;
+                                                                    @endphp
+                                                                @endforeach
+                                                                <div id="additional-options-edit{{ $surveyQuestion->id }}"></div>
+                                                                <button type="button" class="btn btn-secondary mt-2" id="add-option-edit" onclick="editAddNewOption('{{ $surveyQuestion->id }}')">Add Another Option</button>
+                                                            </div>
+                                                            
+                                                            <div class="form-group">
+                                                                <label for="type{{ $surveyQuestion->id }}">Type</label>
+                                                                <select class="form-control" id="type{{ $surveyQuestion->id }}" name="type">
+                                                                    @if(strcmp($surveyQuestion->type,'single-choice')==0)
+                                                                        <option value="single-choice" selected>Single Choice</option>
+                                                                        <option value="multiple-choice">Multiple Choice</option>
+                                                                    @else
+                                                                        <option value="single-choice">Single Choice</option>
+                                                                        <option value="multiple-choice" selected>Multiple Choice</option>
+                                                                    @endif
+                                                                </select>
+                                                            </div>
 
-                                                        <div class="form-group" style='margin-top:10px;margin-bottom:10px;'>
-                                                            <label for="is_required">Is Required?</label>
-                                                            <input type="checkbox" name="is_required" id="is_required" value="1" {{$surveyQuestion->is_required?'checked':''}}>
-                                                        </div>
+                                                            <div class="form-group" style='margin-top:10px;margin-bottom:10px;'>
+                                                                <label for="is_required">Is Required?</label>
+                                                                <input type="checkbox" name="is_required" id="is_required" value="1" {{$surveyQuestion->is_required?'checked':''}}>
+                                                            </div>
 
-                                                        <div class="form-group">
-                                                            <label for="status{{ $surveyQuestion->id }}">Status</label>
-                                                            <select class="form-control" id="status{{ $surveyQuestion->id }}" name="status">
-                                                                @if($surveyQuestion->status==1)
-                                                                    <option value="1" selected>Active</option>
-                                                                    <option value="0" > Inactive</option>
+                                                            <div class="form-group">
+                                                                <label for="viewStatus{{ $surveyQuestion->id }}">Status</label>
+                                                                @if($surveyQuestion->status)
+                                                                    <span class='badge text-bg-success'>Approved</span>
                                                                 @else
-                                                                    <option value="1">Active</option>
-                                                                    <option value="0" selected>Inactive</option>
+                                                                    <span class='badge text-bg-danger'>Not Approved</span>
                                                                 @endif
-                                                            </select>
+                                                            </div>
+                                                            
                                                         </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button
-                                                            type="button"
-                                                            class="btn btn-secondary"
-                                                            data-bs-dismiss="modal"
-                                                        >
-                                                            Close
-                                                        </button>
-                                                        <button
-                                                            type="submit"
-                                                            class="btn btn-primary"
-                                                        >
-                                                            Save Changes
-                                                        </button>
-                                                    </div>
-                                                </form>
+                                                        <div class="modal-footer">
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-secondary"
+                                                                data-bs-dismiss="modal"
+                                                            >
+                                                                Close
+                                                            </button>
+                                                            <button
+                                                                type="submit"
+                                                                class="btn btn-primary"
+                                                            >
+                                                                Save Changes
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <form
-                                        action="{{
-                                            route(
-                                                'survey-questions.destroy',
-                                                $surveyQuestion
-                                            )
-                                        }}"
-                                        method="POST"
-                                        style="display: inline"
-                                        onsubmit="return confirm('Are you sure you want to delete this Survey?');"
-                                    >
-                                        @csrf @method('DELETE')
+                                        <form action="{{route('survey-questions.destroy',$surveyQuestion)}}" method="POST" style="display: inline" onsubmit="return confirm('Are you sure you want to delete this Survey?');">
+                                            @csrf @method('DELETE')
 
-                                        <button
-                                            class="btn btn-icon"
-                                            type="submit"
-                                            title="Delete"
-                                            style="padding: 0px"
-                                        >
-                                            <i
-                                                class="align-middle"
-                                                data-lucide="trash"
-                                                style="
-                                                    color: #d9534f;
-                                                    width: 20px;
-                                                    height: 20px;
-                                                "
-                                            ></i>
-                                        </button>
-                                    </form>
+                                            <button
+                                                class="btn btn-icon"
+                                                type="submit"
+                                                title="Delete"
+                                                style="padding: 0px"
+                                            >
+                                                <i
+                                                    class="align-middle"
+                                                    data-lucide="trash"
+                                                    style="
+                                                        color: #d9534f;
+                                                        width: 20px;
+                                                        height: 20px;
+                                                    "
+                                                ></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach
@@ -357,6 +365,14 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
+                                <div class="form-group">
+                                    <label for="campusId">Campus</label>
+                                    <select class="form-control" id="campusId" name="campusId" onchange="onCampusChange(this.value)">
+                                        @foreach($campuses as $campus)
+                                            <option value="{{$campus->id}}">{{$campus->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                                 <div class="form-group">
                                     <label for="survey_id">Survey Title</label>
                                     <select
@@ -420,17 +436,6 @@
                                     <input type="checkbox" name="is_required" id="is_required" value="1">
                                 </div>
                                 
-                                <div class="form-group">
-                                    <label for="status">Status</label>
-                                    <select
-                                        class="form-control"
-                                        id="status"
-                                        name="status"
-                                    >
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
-                                </div>
                             </div>
                             <div class="modal-footer">
                                 <button
@@ -488,6 +493,25 @@
     
     function editRemoveOption(optionId, questionId) {
         document.getElementById(optionId+''+questionId).remove();
+    }
+
+
+    let allCampuses = @json($campuses);
+    let allSurveyCategory = @json($surveyCategory);
+    console.log(allSurveyCategory);
+    function onCampusChange(campId){
+        console.log(campId)
+        // let campId = document.getElementById('campusId').value;                    
+        // console.log(campId);
+        const survey_id = document.getElementById('survey_id');
+        survey_id.innerHTML = '';
+        const surveyCategoryOptions = allSurveyCategory.map(category => {
+            if(category.campusId == campId){
+                return `<option value="${category.id}">${category.title}</option>`;
+            }
+        }).join(''); 
+        // console.log(categoryOptions)
+        survey_id.innerHTML = surveyCategoryOptions;
     }
 </script>
 @endsection

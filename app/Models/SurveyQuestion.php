@@ -16,6 +16,7 @@ class SurveyQuestion extends Model
         'options',  
         'type',  
         'is_required',  
+        'campusId',
         'status',
         'created_by',
         'updated_by',
