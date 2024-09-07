@@ -129,7 +129,7 @@
                                                         >
                                                     </div>
 
-                                                    <div class="form-group">
+                                                     <div class="form-group">
                                                         <label for="viewCampus{{ $category->id }}">Campus</label>
                                                         <input type="text" class="form-control" id="viewCampus{{ $category->id }}" value="{{ $category->name }}" readonly/>
                                                     </div>

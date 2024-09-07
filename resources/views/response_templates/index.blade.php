@@ -211,131 +211,133 @@
                                             </div>
                                         </div>
                                     </div>
+                                    @if($template->status ==0 )
+                                        <button type="button" title="Edit" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editResponseTemplateModal{{ $template->id }}">
+                                            <i class="align-middle" data-lucide="pencil" style="color: #e5a54b;width: 20px;height: 20px;"></i>
+                                        </button>
 
-                                    <button type="button" title="Edit" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editResponseTemplateModal{{ $template->id }}">
-                                        <i class="align-middle" data-lucide="pencil" style="color: #e5a54b;width: 20px;height: 20px;"></i>
-                                    </button>
+                                        <!-- Edit Template Modal -->
 
-                                    <!-- Edit Template Modal -->
-
-                                    <div class="modal fade" id="editResponseTemplateModal{{ $template->id }}" tabindex="-1" role="dialog" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <form
-                                                    id="editTemplateForm{{ $template->id }}"
-                                                    action="{{ route('response-templates.update', $template->id) }}"
-                                                    method="POST"
-                                                    onsubmit="return validateEditForm('{{$template->id}}')"
-                                                >
-                                                    @csrf @method('PUT')
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="editResponseTemplateModalLabel{{ $template->id }}">
-                                                            Edit Response Template
-                                                        </h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="form-group">
-                                                            <label for="editCampus{{ $template->id }}">Campus</label>
-                                                            <select class="form-control" id="editCampusId{{ $template->id }}" name="campusId">
-                                                                @foreach($campuses as $campus)
-                                                                    @if($template->campusId==$campus->id)
-                                                                        <option value="{{$campus->id}}" selected>{{$campus->name}}</option>
-                                                                    @endif
-                                                                @endforeach
-                                                            </select>
+                                        <div class="modal fade" id="editResponseTemplateModal{{ $template->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form
+                                                        id="editTemplateForm{{ $template->id }}"
+                                                        action="{{ route('response-templates.update', $template->id) }}"
+                                                        method="POST"
+                                                        onsubmit="return validateEditForm('{{$template->id}}')"
+                                                    >
+                                                        @csrf @method('PUT')
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="editResponseTemplateModalLabel{{ $template->id }}">
+                                                                Edit Response Template
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                         </div>
-                                                        <div class="form-group">
-                                                            <label for="content{{ $template->id }}">Content</label>
-                                                            <textarea
-                                                                style="
-                                                                    max-height: 150px;
-                                                                    min-height: 150px;
-                                                                "
-                                                                class="form-control @error('content') is-invalid @enderror"
-                                                                id="content{{ $template->id }}"
-                                                                name="content"
-                                                                >{{ old('content', $template->content) }}</textarea
-                                                            >
-                                                            @error('content')
-                                                            <div class="invalid-feedback">
-                                                                {{ $message }}
+                                                        <div class="modal-body">
+                                                            <div class="form-group">
+                                                                <label for="editCampus{{ $template->id }}">Campus</label>
+                                                                <select class="form-control" id="editCampusId{{ $template->id }}" name="campusId">
+                                                                    @foreach($campuses as $campus)
+                                                                        @if($template->campusId==$campus->id)
+                                                                            <option value="{{$campus->id}}" selected>{{$campus->name}}</option>
+                                                                        @endif
+                                                                    @endforeach
+                                                                </select>
                                                             </div>
-                                                            @enderror
-                                                        </div>
-                                                        
-                                                        <div class="form-group">
-                                                            <label for="status{{ $template->id }}">Message Template</label>
-                                                            {{-- <select
-                                                                class="form-control"
-                                                                id="messageTemplateId{{ $template->id }}"
-                                                                name="messageTemplateId"
-                                                            >
-                                                                @foreach($messageTemplates as $temp)
-                                                                @if($temp->id==$template->tempId)
-                                                                <option value="{{$temp->id}}" selected>{{$temp->content}}</option>
-                                                                @else
-                                                                   <option value="{{$temp->id}}">{{$temp->content}}</option>
-                                                                @endif
-                                                                @endforeach
-                                                            </select> --}}
-                                                            <select
-                                                                class="form-control"
-                                                                id="messageTemplateEditId"
-                                                                name="messageTemplateId"
-                                                                required
-                                                                onChange="displayMessageContent('{{$messagetTemplateIdCollection}}','messageTemplateEditView','messageTemplateEditId')"
-                                                            >
+                                                            <div class="form-group">
+                                                                <label for="content{{ $template->id }}">Content</label>
+                                                                <textarea
+                                                                    style="
+                                                                        max-height: 150px;
+                                                                        min-height: 150px;
+                                                                    "
+                                                                    class="form-control @error('content') is-invalid @enderror"
+                                                                    id="content{{ $template->id }}"
+                                                                    name="content"
+                                                                    >{{ old('content', $template->content) }}</textarea
+                                                                >
+                                                                @error('content')
+                                                                <div class="invalid-feedback">
+                                                                    {{ $message }}
+                                                                </div>
+                                                                @enderror
+                                                            </div>
+                                                            
+                                                            <div class="form-group">
+                                                                <label for="status{{ $template->id }}">Message Template</label>
+                                                                {{-- <select
+                                                                    class="form-control"
+                                                                    id="messageTemplateId{{ $template->id }}"
+                                                                    name="messageTemplateId"
+                                                                >
+                                                                    @foreach($messageTemplates as $temp)
+                                                                    @if($temp->id==$template->tempId)
+                                                                    <option value="{{$temp->id}}" selected>{{$temp->content}}</option>
+                                                                    @else
+                                                                    <option value="{{$temp->id}}">{{$temp->content}}</option>
+                                                                    @endif
+                                                                    @endforeach
+                                                                </select> --}}
+                                                                <select
+                                                                    class="form-control"
+                                                                    id="messageTemplateEditId"
+                                                                    name="messageTemplateId"
+                                                                    required
+                                                                    onChange="displayMessageContent('{{$messagetTemplateIdCollection}}','messageTemplateEditView','messageTemplateEditId')"
+                                                                >
+                                                                    @foreach ($messageTemplates as $temp)
+                                                                        @if($temp->id==$template->tempId)
+                                                                            <option value="{{$temp->id}}" selected>Template-{{ $temp->id }} </option>
+                                                                        @else
+                                                                            <option value="{{$temp->id}}">Template-{{ $temp->id }} </option>
+                                                                        @endif
+                                                                    @endforeach
+                                                                </select>
                                                                 @foreach ($messageTemplates as $temp)
                                                                     @if($temp->id==$template->tempId)
-                                                                        <option value="{{$temp->id}}" selected>Template-{{ $temp->id }} </option>
-                                                                    @else
-                                                                        <option value="{{$temp->id}}">Template-{{ $temp->id }} </option>
-                                                                    @endif
-                                                                @endforeach
-                                                            </select>
-                                                            @foreach ($messageTemplates as $temp)
-                                                                @if($temp->id==$template->tempId)
-                                                                    <lable 
-                                                                    id='messageTemplateEditView{{$temp->id}}' 
-                                                                    style='display:block;margin-top:5px;border:1px dashed darkblue;padding:10px;'>
-                                                                    <h5>Template-{{$temp->id}}</h5>{{$temp->content}}
-                                                                </lable>
-                                                                @else
-                                                                    <lable 
-                                                                    id='messageTemplateEditView{{$temp->id}}' 
-                                                                    style='display:none;margin-top:5px;border:1px dashed darkblue;padding:10px;'>
-                                                                    <h5>Template-{{$temp->id}}</h5>{{$temp->content}}
+                                                                        <lable 
+                                                                        id='messageTemplateEditView{{$temp->id}}' 
+                                                                        style='display:block;margin-top:5px;border:1px dashed darkblue;padding:10px;'>
+                                                                        <h5>Template-{{$temp->id}}</h5>{{$temp->content}}
                                                                     </lable>
-                                                                @endif
-                                                                {{-- <lable 
-                                                                    id='messageTemplateView{{$temp->id}}' 
-                                                                    style='display:none;margin-top:5px;border:1px dashed darkblue;padding:10px;'>
-                                                                    <h5>Template-{{$temp->id}}</h5>{{$temp->content}}
-                                                                </lable> --}}
-                                                            @endforeach
+                                                                    @else
+                                                                        <lable 
+                                                                        id='messageTemplateEditView{{$temp->id}}' 
+                                                                        style='display:none;margin-top:5px;border:1px dashed darkblue;padding:10px;'>
+                                                                        <h5>Template-{{$temp->id}}</h5>{{$temp->content}}
+                                                                        </lable>
+                                                                    @endif
+                                                                    {{-- <lable 
+                                                                        id='messageTemplateView{{$temp->id}}' 
+                                                                        style='display:none;margin-top:5px;border:1px dashed darkblue;padding:10px;'>
+                                                                        <h5>Template-{{$temp->id}}</h5>{{$temp->content}}
+                                                                    </lable> --}}
+                                                                @endforeach
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                            Close
-                                                        </button>
-                                                        <button type="submit" class="btn btn-primary">
-                                                            Save
-                                                        </button>
-                                                    </div>
-                                                </form>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                                Close
+                                                            </button>
+                                                            <button type="submit" class="btn btn-primary">
+                                                                Save
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <form action="{{route('response-templates.destroy',$template)}}" method="POST" style="display: inline" onsubmit="return confirm('Are you sure you want to delete this template?');">
-                                        @csrf @method('DELETE')
+                                        <form action="{{route('response-templates.destroy',$template)}}" method="POST" style="display: inline" onsubmit="return confirm('Are you sure you want to delete this template?');">
+                                            @csrf @method('DELETE')
 
-                                        <button class="btn btn-icon" type="submit" title="Delete" style="padding: 0px">
-                                            <i class="align-middle" data-lucide="trash" style="color: #d9534f;width: 20px;height: 20px;"></i>
-                                        </button>
-                                    </form>
+                                            <button class="btn btn-icon" type="submit" title="Delete" style="padding: 0px">
+                                                <i class="align-middle" data-lucide="trash" style="color: #d9534f;width: 20px;height: 20px;"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+
                                 </td>
                             </tr>
                             @endforeach

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\EventCategory;
+use App\Models\Campuse;
+use App\Models\DcbApplicationPermission;
+use App\Models\DcbApplicationList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -11,7 +14,16 @@ class EventCategoryController extends Controller
 {
     public function index()
     {
-        $categories = EventCategory::all();
+        // Fetch Campus Permission
+        $applicationListURL = 'event-categories'; 
+        $applicationList = DcbApplicationList::where('url',$applicationListURL)->first(); 
+        $applicationListId = $applicationList->id;
+        $campusPermissions = DcbApplicationPermission::where('userId', Auth::id())
+        ->where('appId', $applicationListId)->pluck('campusId')->toArray();
+        $campuses =  Campuse::whereIn('id', $campusPermissions)->get();
+
+        $categories = EventCategory::where('created_by', Auth::id())
+        ->get();
         return view('event_categories.index', compact('categories'));
         // $search = $request->input('search');
         

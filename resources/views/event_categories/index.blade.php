@@ -71,25 +71,8 @@
     <div class="row" style="margin-top: -30px">
         <div class="col-12">
             <div class="card">
-                <!-- <div class="card-header">
-                    <h5 class="card-title">DataTables with Fixed Header</h5>
-                    <h6 class="card-subtitle text-muted">
-                        The Fixed Header DataTables extension ensures the table
-                        headers don't leave the user's viewport when scrolling
-                        down. See official documentation
-                        <a
-                            href="https://datatables.net/extensions/fixedheader/"
-                            target="_blank"
-                            rel="noopener noreferrer nofollow"
-                            >here</a
-                        >.
-                    </h6>
-                </div> -->
                 <div class="card-body">
-                    <table
-                        id="datatables-fixed-header"
-                        class="table table-striped w-100"
-                    >
+                    <table id="datatables-fixed-header" class="table table-striped w-100">
                         <thead>
                             <tr>
                                 <th>Title</th>
@@ -105,7 +88,11 @@
                                     {{ $category->title }}
                                 </td>
                                 <td>
-                                    {{ $category->status ? "Active" : "Inactive" }}
+                                    @if($category->status)
+                                        <span class='badge text-bg-success'>Approved</span>
+                                    @else
+                                        <span class='badge text-bg-danger'>Not Approved</span>
+                                    @endif
                                 </td>
                                 <td>
                                     <button type="button" title="View" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#viewCategoryModal{{ $category->id }}">
@@ -157,13 +144,11 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="viewStatus{{ $category->id }}">Status</label>
-                                                        <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            id="viewStatus{{ $category->id }}"
-                                                            value="{{ $category->status ? 'Active' : 'Inactive' }}"
-                                                            readonly
-                                                        />
+                                                         @if($category->status)
+                                                            <span class='badge text-bg-success'>Approved</span>
+                                                        @else
+                                                            <span class='badge text-bg-danger'>Not Approved</span>
+                                                        @endif
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">
@@ -175,156 +160,97 @@
                                         </div>
                                     </div>
 
-                                    <button type="button" title="Edit" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editCategoryModal{{ $category->id }}">
-                                        <i class="align-middle" data-lucide="pencil" style="color: #e5a54b;width: 20px;height: 20px;"></i>
-                                    </button>
-
-                                    <!-- Edit Category Modal -->
-
-                                    <div class="modal fade" id="editCategoryModal{{ $category->id }}" tabindex="-1" role="dialog" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <form id="editCategoryForm{{ $category->id }}" action="{{ route('event-categories.update', $category->id) }}" method="POST" onsubmit="return validateEditForm('{{$category->id}}')">
-                                                    @csrf @method('PUT')
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="editCategoryModalLabel{{ $category->id }}">
-                                                            Edit Event Category
-                                                        </h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <div class="form-group">
-                                                            <label for="title{{ $category->id }}">Title</label>
-                                                            <input
-                                                                type="text"
-                                                                class="form-control @error('title') is-invalid @enderror"
-                                                                id="title{{ $category->id }}"
-                                                                name="title"
-                                                                value="{{ old('title', $category->title) }}"
-                                                                required
-                                                            />
-                                                            @error('title')
-                                                            <div
-                                                                class="invalid-feedback"
-                                                            >
-                                                                {{ $message }}
+                                     @if($category->status ==0 )
+                                        <button type="button" title="Edit" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editCategoryModal{{ $category->id }}">
+                                            <i class="align-middle" data-lucide="pencil" style="color: #e5a54b;width: 20px;height: 20px;"></i>
+                                        </button>
+    
+                                        <!-- Edit Category Modal -->
+    
+                                        <div class="modal fade" id="editCategoryModal{{ $category->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form id="editCategoryForm{{ $category->id }}" action="{{ route('event-categories.update', $category->id) }}" method="POST" onsubmit="return validateEditForm('{{$category->id}}')">
+                                                        @csrf @method('PUT')
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="editCategoryModalLabel{{ $category->id }}">
+                                                                Edit Event Category
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <div class="form-group">
+                                                                <label for="title{{ $category->id }}">Title</label>
+                                                                <input
+                                                                    type="text"
+                                                                    class="form-control @error('title') is-invalid @enderror"
+                                                                    id="title{{ $category->id }}"
+                                                                    name="title"
+                                                                    value="{{ old('title', $category->title) }}"
+                                                                    required
+                                                                />
+                                                                @error('title')
+                                                                <div
+                                                                    class="invalid-feedback"
+                                                                >
+                                                                    {{ $message }}
+                                                                </div>
+                                                                @enderror
                                                             </div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label for="description{{ $category->id }}">Description</label>
-                                                            <textarea
-                                                                style="
-                                                                    max-height: 150px;
-                                                                    min-height: 150px;
-                                                                "
-                                                                class="form-control @error('description') is-invalid @enderror"
-                                                                id="description{{ $category->id }}"
-                                                                name="description"
-                                                                >{{ old('description', $category->description) }}</textarea
-                                                            >
-                                                            @error('description')
-                                                            <div
-                                                                class="invalid-feedback"
-                                                            >
-                                                                {{ $message }}
+    
+                                                            <div class="form-group">
+                                                                <label for="description{{ $category->id }}">Description</label>
+                                                                <textarea
+                                                                    style="
+                                                                        max-height: 150px;
+                                                                        min-height: 150px;
+                                                                    "
+                                                                    class="form-control @error('description') is-invalid @enderror"
+                                                                    id="description{{ $category->id }}"
+                                                                    name="description"
+                                                                    >{{ old('description', $category->description) }}</textarea
+                                                                >
+                                                                @error('description')
+                                                                <div
+                                                                    class="invalid-feedback"
+                                                                >
+                                                                    {{ $message }}
+                                                                </div>
+                                                                @enderror
                                                             </div>
-                                                            @enderror
+    
+                                                            <div class="form-group">
+                                                                <label for="viewColor">Color</label>
+                                                                <input 
+                                                                    type="color" 
+                                                                    class="form-control form-control-color" 
+                                                                    id="color" name="color" value="{{$category->color}}" title="Choose a color" >
+                                                            </div>
+    
+                                                            
+    
                                                         </div>
-
-                                                         <div class="form-group">
-                                                            <label for="viewColor">Color</label>
-                                                            <input 
-                                                                type="color" 
-                                                                class="form-control form-control-color" 
-                                                                id="color" name="color" value="{{$category->color}}" title="Choose a color" >
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="status{{ $category->id }}">Status</label>
-                                                            <select
-                                                                class="form-control"
-                                                                id="status{{ $category->id }}"
-                                                                name="status"
-                                                            >
-                                                                @if($category->status==1)
-                                                                <option
-                                                                    value="1"
-                                                                    selected
-                                                                >
-                                                                    Active
-                                                                </option>
-                                                                <option
-                                                                    value="0"
-                                                                >
-                                                                    Inactive
-                                                                </option>
-                                                                @else
-                                                                <option
-                                                                    value="1"
-                                                                >
-                                                                    Active
-                                                                </option>
-                                                                <option
-                                                                    value="0"
-                                                                    selected
-                                                                >
-                                                                    Inactive
-                                                                </option>
-                                                                @endif
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button
-                                                            type="button"
-                                                            class="btn btn-secondary"
-                                                            data-bs-dismiss="modal"
-                                                        >
-                                                            Close
-                                                        </button>
-                                                        <button
-                                                            type="submit"
-                                                            class="btn btn-primary"
-                                                        >
-                                                            Save Changes
-                                                        </button>
-                                                    </div>
-                                                </form>
+                                                        <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                                    Close
+                                                                </button>
+                                                                <button type="submit" class="btn btn-primary">
+                                                                    Save Changes
+                                                                </button>
+                                                            </div>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    <form
-                                        action="{{
-                                            route(
-                                                'event-categories.destroy',
-                                                $category
-                                            )
-                                        }}"
-                                        method="POST"
-                                        style="display: inline"
-                                        onsubmit="return confirm('Are you sure you want to delete this category?');"
-                                    >
-                                        @csrf @method('DELETE')
-
-                                        <button
-                                            class="btn btn-icon"
-                                            type="submit"
-                                            title="Delete"
-                                            style="padding: 0px"
-                                        >
-                                            <i
-                                                class="align-middle"
-                                                data-lucide="trash"
-                                                style="
-                                                    color: #d9534f;
-                                                    width: 20px;
-                                                    height: 20px;
-                                                "
-                                            ></i>
-                                        </button>
-                                    </form>
+    
+                                        <form action="{{ route( 'event-categories.destroy', $category)}}" method="POST" style="display: inline" onsubmit="return confirm('Are you sure you want to delete this category?');">
+                                            @csrf @method('DELETE')
+    
+                                            <button class="btn btn-icon" type="submit" title="Delete" style="padding: 0px">
+                                                <i class="align-middle" data-lucide="trash" style="color: #d9534f;width: 20px;height: 20px;"></i>
+                                            </button>
+                                        </form>
+                                     @endif
                                 </td>
                             </tr>
                             @endforeach
@@ -402,25 +328,9 @@
                                         class="form-control form-control-color" 
                                         id="color" name="color" value="#CCCCCC" title="Choose a color">
                                 </div>
-
-                                <div class="form-group">
-                                    <label for="status">Status</label>
-                                    <select
-                                        class="form-control"
-                                        id="status"
-                                        name="status"
-                                    >
-                                        <option value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
-                                </div>
                             </div>
                             <div class="modal-footer">
-                                <button
-                                    type="button"
-                                    class="btn btn-secondary"
-                                    data-bs-dismiss="modal"
-                                >
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                     Close
                                 </button>
                                 <button type="submit" class="btn btn-primary">

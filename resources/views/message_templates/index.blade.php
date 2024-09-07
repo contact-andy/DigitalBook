@@ -224,130 +224,131 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    
-                                    <!-- Edit Template Modal -->
-                                    <button type="button" title="Edit" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editTemplateModal{{ $template->id }}">
-                                        <i class="align-middle" data-lucide="pencil" style="color: #e5a54b;width: 20px;height: 20px;"></i>
-                                    </button>
-                                    <div class="modal fade" id="editTemplateModal{{ $template->id }}" tabindex="-1" role="dialog" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <form id="editTemplateForm{{ $template->id }}" action="{{ route('message-templates.update', $template->id) }}" method="POST" onsubmit="return validateEditForm('{{$template->id}}')">
-                                                    @csrf @method('PUT')
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="editTemplateModalLabel{{ $template->id }}">
-                                                            Edit Message Template
-                                                        </h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                         @php
-                                                            $selectedCampusId = $template->campusId;
-                                                        @endphp
-                                                        <div class="form-group">
-                                                            <label for="campusId">Campus</label>
-                                                            <select class="form-control" id="editCampusId" name="campusId">
-                                                                @foreach($campuses as $campus)
-                                                                    @if($selectedCampusId==$campus->id)
-                                                                        <option value="{{$campus->id}}">{{$campus->name}}</option>
-                                                                    @endif
-                                                                @endforeach
-                                                            </select>
+                                    @if($template->status ==0 )
+                                        
+                                        <!-- Edit Template Modal -->
+                                        <button type="button" title="Edit" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editTemplateModal{{ $template->id }}">
+                                            <i class="align-middle" data-lucide="pencil" style="color: #e5a54b;width: 20px;height: 20px;"></i>
+                                        </button>
+                                        <div class="modal fade" id="editTemplateModal{{ $template->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <form id="editTemplateForm{{ $template->id }}" action="{{ route('message-templates.update', $template->id) }}" method="POST" onsubmit="return validateEditForm('{{$template->id}}')">
+                                                        @csrf @method('PUT')
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="editTemplateModalLabel{{ $template->id }}">
+                                                                Edit Message Template
+                                                            </h5>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                         </div>
-                                                        <div class="form-group">
-                                                            <label for="editMessageCategoryId">Message Category</label>
-                                                            <select class="form-control" id="editMessageCategoryId" name="messageCategoryId" required>
-                                                                @foreach ($categories as $category)
-                                                                    @if($selectedCampusId==$category->campusId)
-                                                                        <option value="{{$category->id}}">{{$category->title}}</option>
-                                                                    @endif
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="content{{ $template->id }}">Content</label>
-                                                            <textarea
-                                                                style="
-                                                                    max-height: 150px;
-                                                                    min-height: 150px;
-                                                                "
-                                                                class="form-control @error('content') is-invalid @enderror"
-                                                                id="content{{ $template->id }}"
-                                                                name="content"
-                                                                >{{ old('content', $template->content) }}</textarea
-                                                            >
-                                                            @error('content')
-                                                            <div
-                                                                class="invalid-feedback"
-                                                            >
-                                                                {{ $message }}
-                                                            </div>
-                                                            @enderror
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label for="type{{ $template->id }}">Type(Works for)</label>
-                                                            <select class="form-control" id="type{{ $template->id }}" name="type">
-                                                                @if(strcmp($template->type,"single")==0)
-                                                                    <option value="single" selected>Single</option>
-                                                                    <option value="multiple">Multiple</option>
-                                                                @else
-                                                                    <option value="single">Single</option>
-                                                                    <option value="multiple" selected>Multiple</option>
-                                                                @endif
-                                                            </select>
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="editGradeLevels">Applicable Grade-Levels</label>
-                                                            <select multiple class="form-control" id="editGradeLevels" name="gradeLevels[]" required>
-                                                                @foreach ($gradeLevels as $gradeLevel)
-                                                                    @if($selectedCampusId==$gradeLevel->campusId)
-                                                                        @php
-                                                                            $check = 0;
-                                                                        @endphp
-                                                                        @foreach ($gLevels as $gLevel)
-                                                                            @if ($gLevel == $gradeLevel->id)
-                                                                                <option value="{{$gradeLevel->id}}" selected>{{ $gradeLevel->level }}</option>
-                                                                                {{$check=1}}
-                                                                                @break;
-                                                                            @endif
-                                                                        @endforeach
-                                                                        @if ($check==0)
-                                                                            <option value="{{$gradeLevel->id}}">{{ $gradeLevel->level }}</option>
+                                                        <div class="modal-body">
+                                                            @php
+                                                                $selectedCampusId = $template->campusId;
+                                                            @endphp
+                                                            <div class="form-group">
+                                                                <label for="campusId">Campus</label>
+                                                                <select class="form-control" id="editCampusId" name="campusId">
+                                                                    @foreach($campuses as $campus)
+                                                                        @if($selectedCampusId==$campus->id)
+                                                                            <option value="{{$campus->id}}">{{$campus->name}}</option>
                                                                         @endif
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="editMessageCategoryId">Message Category</label>
+                                                                <select class="form-control" id="editMessageCategoryId" name="messageCategoryId" required>
+                                                                    @foreach ($categories as $category)
+                                                                        @if($selectedCampusId==$category->campusId)
+                                                                            <option value="{{$category->id}}">{{$category->title}}</option>
+                                                                        @endif
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="content{{ $template->id }}">Content</label>
+                                                                <textarea
+                                                                    style="
+                                                                        max-height: 150px;
+                                                                        min-height: 150px;
+                                                                    "
+                                                                    class="form-control @error('content') is-invalid @enderror"
+                                                                    id="content{{ $template->id }}"
+                                                                    name="content"
+                                                                    >{{ old('content', $template->content) }}</textarea
+                                                                >
+                                                                @error('content')
+                                                                <div
+                                                                    class="invalid-feedback"
+                                                                >
+                                                                    {{ $message }}
+                                                                </div>
+                                                                @enderror
+                                                            </div>
+
+                                                            <div class="form-group">
+                                                                <label for="type{{ $template->id }}">Type(Works for)</label>
+                                                                <select class="form-control" id="type{{ $template->id }}" name="type">
+                                                                    @if(strcmp($template->type,"single")==0)
+                                                                        <option value="single" selected>Single</option>
+                                                                        <option value="multiple">Multiple</option>
+                                                                    @else
+                                                                        <option value="single">Single</option>
+                                                                        <option value="multiple" selected>Multiple</option>
                                                                     @endif
-                                                                @endforeach
-                                                            </select>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label for="editGradeLevels">Applicable Grade-Levels</label>
+                                                                <select multiple class="form-control" id="editGradeLevels" name="gradeLevels[]" required>
+                                                                    @foreach ($gradeLevels as $gradeLevel)
+                                                                        @if($selectedCampusId==$gradeLevel->campusId)
+                                                                            @php
+                                                                                $check = 0;
+                                                                            @endphp
+                                                                            @foreach ($gLevels as $gLevel)
+                                                                                @if ($gLevel == $gradeLevel->id)
+                                                                                    <option value="{{$gradeLevel->id}}" selected>{{ $gradeLevel->level }}</option>
+                                                                                    {{$check=1}}
+                                                                                    @break;
+                                                                                @endif
+                                                                            @endforeach
+                                                                            @if ($check==0)
+                                                                                <option value="{{$gradeLevel->id}}">{{ $gradeLevel->level }}</option>
+                                                                            @endif
+                                                                        @endif
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                            
                                                         </div>
-                                                        
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button
-                                                            type="button"
-                                                            class="btn btn-secondary"
-                                                            data-bs-dismiss="modal"
-                                                        >
-                                                            Close
-                                                        </button>
-                                                        <button
-                                                            type="submit"
-                                                            class="btn btn-primary"
-                                                        >
-                                                            Save Changes
-                                                        </button>
-                                                    </div>
-                                                </form>
+                                                        <div class="modal-footer">
+                                                            <button
+                                                                type="button"
+                                                                class="btn btn-secondary"
+                                                                data-bs-dismiss="modal"
+                                                            >
+                                                                Close
+                                                            </button>
+                                                            <button
+                                                                type="submit"
+                                                                class="btn btn-primary"
+                                                            >
+                                                                Save Changes
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <form action="{{route('message-templates.destroy',$template)}}" method="POST" style="display: inline"onsubmit="return confirm('Are you sure you want to delete this template?');">
-                                        @csrf @method('DELETE')
-                                        <button class="btn btn-icon" type="submit" title="Delete" style="padding: 0px">
-                                            <i class="align-middle" data-lucide="trash" style="color: #d9534f;width: 20px;height: 20px;"></i>
-                                        </button>
-                                    </form>
+                                        <form action="{{route('message-templates.destroy',$template)}}" method="POST" style="display: inline"onsubmit="return confirm('Are you sure you want to delete this template?');">
+                                            @csrf @method('DELETE')
+                                            <button class="btn btn-icon" type="submit" title="Delete" style="padding: 0px">
+                                                <i class="align-middle" data-lucide="trash" style="color: #d9534f;width: 20px;height: 20px;"></i>
+                                            </button>
+                                        </form>
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach

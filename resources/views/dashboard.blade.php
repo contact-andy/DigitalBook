@@ -72,6 +72,10 @@
             $responseTemplateApproved = DB::table('response_templates')->where('status',1)->count();
             $rtProgressWidth = round(($responseTemplateApproved/$responseTemplateTotal)*100);
 
+            $eventCategoryTotal = DB::table('event_categories')->count();
+            $eventCategoryApproved = DB::table('event_categories')->where('status',1)->count();
+            $ecProgressWidth = round(($eventCategoryApproved/$eventCategoryTotal)*100);
+
             
             
         @endphp
@@ -136,6 +140,22 @@
                                         <div class="progress-bar bg-primary" role="progressbar" style="width: {{$rtProgressWidth}}%;" aria-valuenow="{{$rtProgressWidth}}" aria-valuemin="0" aria-valuemax="100">{{$rtProgressWidth}}%</div>                                        
                                     @else
                                         <div class="progress-bar bg-danger" role="progressbar" style="width: {{$rtProgressWidth}}%;" aria-valuenow="{{$rtProgressWidth}}" aria-valuemin="0" aria-valuemax="100">{{$rtProgressWidth}}%</div>                                        
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td style='width:40%'>Event Category</td>
+                            <td class="text-end">{{$eventCategoryTotal}}</td>
+                            <td class="d-none d-xl-table-cell">
+                                <div class="progress">
+                                    @if ($ecProgressWidth>=75)
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{$ecProgressWidth}}%;" aria-valuenow="{{$rtProgressWidth}}" aria-valuemin="0" aria-valuemax="100">{{$ecProgressWidth}}%</div>                                        
+                                    @elseif ($ecProgressWidth>=50)
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: {{$ecProgressWidth}}%;" aria-valuenow="{{$rtProgressWidth}}" aria-valuemin="0" aria-valuemax="100">{{$ecProgressWidth}}%</div>                                        
+                                    @else
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: {{$ecProgressWidth}}%;" aria-valuenow="{{$rtProgressWidth}}" aria-valuemin="0" aria-valuemax="100">{{$ecProgressWidth}}%</div>                                        
                                     @endif
                                 </div>
                             </td>
@@ -209,8 +229,8 @@
                 <div class="card-body py-4">
                     <div class="d-flex align-items-start">
                         <div class="flex-grow-1">
-                            <h3 class="mb-2">{{$responseTemplateTotal}}</h3>
-                            <p class="mb-2">Response Template</p>
+                            <h3 class="mb-2">{{$eventCategoryTotal}}</h3>
+                            <p class="mb-2">Event Catgeory</p>
                         </div>
                         <div class="d-inline-block ms-3">
                             <div class="stat">
