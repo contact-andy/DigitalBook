@@ -74,7 +74,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('publish-survey', PublishSurveyController::class)->middleware('application.permission');
 
     Route::resource('application-grant', ApplicationGrantController::class)->middleware('application.permission');
-    Route::resource('data-grant', DataGrantController::class)->middleware('application.permission');
+    Route::resource('data-grants', DataGrantController::class)->middleware('application.permission');
     Route::resource('user-activities', UserActivityController::class)->middleware('application.permission');
     Route::post('/after-user-selection', [ApplicationGrantController::class, 'afterUserSelection'])->name('after-user-selection');
 
