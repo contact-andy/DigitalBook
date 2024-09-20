@@ -22,9 +22,21 @@ class EventCategoryController extends Controller
         ->where('appId', $applicationListId)->pluck('campusId')->toArray();
         $campuses =  Campuse::whereIn('id', $campusPermissions)->get();
 
-        $categories = EventCategory::where('created_by', Auth::id())
+        // $categories = EventCategory::where('created_by', Auth::id())
+        // ->get();
+        // return view('event_categories.index', compact('categories'));
+
+        $categories = EventCategory::select('event_categories.*', 'campuses.name','campuses.id as campId')
+        ->join('campuses', 'campuses.id', '=', 'event_categories.campusId')
+        ->whereIn('campusId', $campusPermissions)
+        ->where('created_by', Auth::id())
         ->get();
-        return view('event_categories.index', compact('categories'));
+        return view('event_categories.index', [
+            'categories'=>$categories,
+            'campuses'=>$campuses,
+        ]);
+
+
         // $search = $request->input('search');
         
         // $categories = EventCategory::query()
@@ -45,40 +57,63 @@ class EventCategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => [
-                'required',
-                Rule::unique('event_categories')->where(function ($query) {
-                    return $query->whereNull('deleted_at');
-                }),
-            ],
+            'title' => 'required',
             'description' => 'nullable|string',
-            'status' => 'required|boolean',
             'color' => 'required',
+            'campusId' => 'required',
         ]);
 
-        $categoriesCount = EventCategory::where('title',  $request->get('title'))->withTrashed()->count();
-        if($categoriesCount==1){
-            $categories = EventCategory::where('title',  $request->get('title'))->withTrashed()->first();
-            $id= $categories->id;
-            $category = EventCategory::withTrashed()->findOrFail($id);
-            $category->restore();
-            return redirect()->route('event-categories.index')->with('info', 'Event category [RESTORED] successfully!');
+        $campusIdCollection = $request->get('campusId');
+        // return $campusIdCollection;
+        $saveCounter=0;
+        for($i=0;$i<sizeof($campusIdCollection);$i++){
+            $campusId= $campusIdCollection[$i];
+            $checkUniqueCount = EventCategory::where('title',  $request->get('title'))
+            ->where('campusId',  $campusId)
+            ->count();
+            if($checkUniqueCount==0){
+                $event = new EventCategory([
+                    'title' => $request->get('title'),
+                    'description' => $request->get('description'),
+                    'color' => $request->get('color'),
+                    'campusId' => $campusId,
+                    'created_by' => auth()->id(),
+                    'updated_by' => auth()->id(),
+                ]);
+                if ($event->save()) {
+                    $saveCounter++;
+                }
+            }
         }
-
-        $category = new EventCategory([
-            'title' => $request->get('title'),
-            'description' => $request->get('description'),
-            'color' => $request->get('color'),
-            'status' => $request->get('status'),
-            'created_by' => auth()->id(),
-            'updated_by' => auth()->id(),
-        ]);
-
-        if ($category->save()) {
+        if ($saveCounter!=0) {
             return redirect()->route('event-categories.index')->with('success', 'Event category [CREATED] successfully!');
         } else {
             return redirect()->route('event-categories.index')->with('error', 'Failed to [CREATE] event category!');
         }
+
+        // $categoriesCount = EventCategory::where('title',  $request->get('title'))->withTrashed()->count();
+        // if($categoriesCount==1){
+        //     $categories = EventCategory::where('title',  $request->get('title'))->withTrashed()->first();
+        //     $id= $categories->id;
+        //     $category = EventCategory::withTrashed()->findOrFail($id);
+        //     $category->restore();
+        //     return redirect()->route('event-categories.index')->with('info', 'Event category [RESTORED] successfully!');
+        // }
+
+        // $category = new EventCategory([
+        //     'title' => $request->get('title'),
+        //     'description' => $request->get('description'),
+        //     'color' => $request->get('color'),
+        //     'status' => $request->get('status'),
+        //     'created_by' => auth()->id(),
+        //     'updated_by' => auth()->id(),
+        // ]);
+
+        // if ($category->save()) {
+        //     return redirect()->route('event-categories.index')->with('success', 'Event category [CREATED] successfully!');
+        // } else {
+        //     return redirect()->route('event-categories.index')->with('error', 'Failed to [CREATE] event category!');
+        // }
     }
 
     public function show(EventCategory $eventCategory)
@@ -94,26 +129,47 @@ class EventCategoryController extends Controller
     public function update(Request $request, EventCategory $eventCategory)
     {
         $request->validate([ 
-            'title' => [
-                'required',
-                Rule::unique('event_categories')->whereNull('deleted_at')->ignore($eventCategory->id),
-            ],
+            'title' => 'required',
             'description' => 'nullable|string',
-            'status' => 'required|boolean',
+            'campusId' => 'required',
             'color' => 'required',
         ]);
 
-        $eventCategory->title = $request->get('title');
-        $eventCategory->description = $request->get('description'); // Handle description
-        $eventCategory->color = $request->get('color');
-        $eventCategory->status = $request->get('status');
-        $eventCategory->updated_by = auth()->id();
 
-        if ($eventCategory->save()) {
-            return redirect()->route('event-categories.index')->with('success', 'Event category [UPDATED] successfully!');
-        } else {
+        $campusId = $request->get('campusId');;
+        $checkUniqueCount = EventCategory::where('title',  $request->get('title'))
+        ->where('campusId',  $campusId)
+        ->where('id','!=',  $eventCategory->id)
+        ->count();
+        if($checkUniqueCount==0)
+        {
+            $eventCategory->title = $request->get('title');
+            $eventCategory->description = $request->get('description'); // Handle description
+            $eventCategory->campusId = $request->get('campusId');
+            $eventCategory->color = $request->get('color');
+            $eventCategory->updated_by = auth()->id();
+
+            if ($eventCategory->save()) {
+                return redirect()->route('event-categories.index')->with('success', 'Event category [UPDATED] successfully!');
+            } else {
+                return redirect()->route('event-categories.index')->with('error', 'Failed to [UPDATE] event category!');
+            }
+        }
+        else 
+        {
             return redirect()->route('event-categories.index')->with('error', 'Failed to [UPDATE] event category!');
         }
+
+        // $eventCategory->title = $request->get('title');
+        // $eventCategory->description = $request->get('description'); // Handle description
+        // $eventCategory->color = $request->get('color');
+        // $eventCategory->updated_by = auth()->id();
+
+        // if ($eventCategory->save()) {
+        //     return redirect()->route('event-categories.index')->with('success', 'Event category [UPDATED] successfully!');
+        // } else {
+        //     return redirect()->route('event-categories.index')->with('error', 'Failed to [UPDATE] event category!');
+        // }
     }
 
     public function destroy(EventCategory $eventCategory)
@@ -135,5 +191,74 @@ class EventCategoryController extends Controller
         $category->forceDelete();
 
         return redirect()->route('event-categories.index')->with('success', 'Category [DELETED] permanently.');
+    }
+
+    public function eventApproval()
+    {
+        // Fetch Campus Permission
+        $applicationListURL = 'event-approval'; 
+        $applicationList = DcbApplicationList::where('url',$applicationListURL)->first(); 
+        $applicationListId = $applicationList->id;
+        $campusPermissions = DcbApplicationPermission::where('userId', Auth::id())
+        ->where('appId', $applicationListId)->pluck('campusId')->toArray();
+        $campuses =  Campuse::whereIn('id', $campusPermissions)->get();
+
+        $categories = EventCategory::select('event_categories.*', 'campuses.name','campuses.id as campId')
+        ->join('campuses', 'campuses.id', '=', 'event_categories.campusId')
+        ->whereIn('campusId', $campusPermissions)
+        ->where('created_by', Auth::id())
+        ->get();
+        return view('category_approval.index', [
+            'categories'=>$categories,
+            'campuses'=>$campuses,
+        ]);
+    }
+    public function approve(Request $request, EventCategory $eventCategory)
+    {
+        $id= $request->get('id');
+        $request->validate([
+            'title' =>  'required',
+            'description' => 'nullable|string',
+            'campusId' => 'required',
+        ]);
+        $campusId = $request->get('campusId');;
+        $checkUniqueCount = EventCategory::where('title',  $request->get('title'))
+        ->where('campusId',  $campusId)
+        ->where('id','!=',  $id)
+        ->count();
+        if($checkUniqueCount==0)
+        {
+            $eventCategory = EventCategory::where('id','=',  $id)->first();
+            $eventCategory->title = $request->get('title');
+            $eventCategory->description = $request->get('description'); // Handle description
+            $eventCategory->campusId = $request->get('campusId');
+            $eventCategory->color = $request->get('color');
+            $eventCategory->status = $request->get('status');
+            $eventCategory->updated_by = auth()->id();
+
+            if ($eventCategory->save()) {
+                return redirect()->route('event-approval.index')->with('success', 'Message category status [UPDATED] successfully!');
+            } else {
+                return redirect()->route('event-approval.index')->with('error', 'Failed to [UPDATE] message category status!');
+            }
+        }
+        else 
+        {
+            return redirect()->route('event-approval.index')->with('error', 'Failed to [UPDATE] message category status, [REPATED TITLE]!');
+        }
+    }
+    public function instantApprove(Request $request)
+    {
+        $eventCategory = EventCategory::find($request->id);
+        $status = $request->status;
+        if ($eventCategory) {
+            $eventCategory->status = $status;
+            $eventCategory->updated_by = Auth::id();
+            $eventCategory->save();
+
+            return response()->json(['success' => true, 'message' => 'Message category approved successfully.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Message category not found.'], 404);
     }
 }

@@ -56,12 +56,7 @@ class MessageCategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => [
-                'required',
-                Rule::unique('message_categories')->where(function ($query) {
-                    return $query->whereNull('deleted_at');
-                }),
-            ],
+            'title' => 'required',
             'description' => 'nullable|string',
             'campusId' => 'required',
         ]);
@@ -165,4 +160,72 @@ class MessageCategoryController extends Controller
         return redirect()->route('message-categories.index')->with('success', 'Category [DELETED] permanently.');
     }
 
+    public function categoryApproval()
+    {
+        // Fetch Campus Permission
+        $applicationListURL = 'category-approval'; 
+        $applicationList = DcbApplicationList::where('url',$applicationListURL)->first(); 
+        $applicationListId = $applicationList->id;
+        $campusPermissions = DcbApplicationPermission::where('userId', Auth::id())
+        ->where('appId', $applicationListId)->pluck('campusId')->toArray();
+        $campuses =  Campuse::whereIn('id', $campusPermissions)->get();
+
+        $categories = MessageCategory::select('message_categories.*', 'campuses.name','campuses.id as campId')
+        ->join('campuses', 'campuses.id', '=', 'message_categories.campusId')
+        ->whereIn('campusId', $campusPermissions)
+        ->where('created_by', Auth::id())
+        ->get();
+        return view('category_approval.index', [
+            'categories'=>$categories,
+            'campuses'=>$campuses,
+        ]);
+    }
+    public function approve(Request $request, MessageCategory $messageCategory)
+    {
+        $id= $request->get('id');
+        $request->validate([
+            'title' =>  'required',
+            'description' => 'nullable|string',
+            'campusId' => 'required',
+        ]);
+        $campusId = $request->get('campusId');;
+        $checkUniqueCount = MessageCategory::where('title',  $request->get('title'))
+        ->where('campusId',  $campusId)
+        ->where('id','!=',  $id)
+        ->count();
+        if($checkUniqueCount==0)
+        {
+            $messageCategory = MessageCategory::where('id','=',  $id)->first();
+            $messageCategory->title = $request->get('title');
+            $messageCategory->description = $request->get('description'); // Handle description
+            $messageCategory->campusId = $request->get('campusId');
+            $messageCategory->comment = $request->get('comment');
+            $messageCategory->status = $request->get('status');
+            $messageCategory->updated_by = auth()->id();
+
+            if ($messageCategory->save()) {
+                return redirect()->route('category-approval.index')->with('success', 'Message category status [UPDATED] successfully!');
+            } else {
+                return redirect()->route('category-approval.index')->with('error', 'Failed to [UPDATE] message category status!');
+            }
+        }
+        else 
+        {
+            return redirect()->route('category-approval.index')->with('error', 'Failed to [UPDATE] message category status, [REPATED TITLE]!');
+        }
+    }
+    public function instantApprove(Request $request)
+    {
+        $messageCategory = MessageCategory::find($request->id);
+        $status = $request->status;
+        if ($messageCategory) {
+            $messageCategory->status = $status;
+            $messageCategory->updated_by = Auth::id();
+            $messageCategory->save();
+
+            return response()->json(['success' => true, 'message' => 'Message category approved successfully.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Message category not found.'], 404);
+    }
 }

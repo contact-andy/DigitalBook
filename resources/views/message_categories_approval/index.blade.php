@@ -1,5 +1,5 @@
 @extends('layouts.app') 
-@section('title', 'Event Categories')
+@section('title', 'Message Categories')
 @section('content')
 <div class="container-fluid p-0">
     @if(session('success'))
@@ -49,7 +49,7 @@
     @endif
     <div class="row mb-2 mb-xl-3">
         <div class="col-auto d-none d-sm-block">
-            <h3>Event Categories</h3>
+            <h3>Message Categories</h3>
         </div>
 
         <div class="col-auto ms-auto text-end mt-n1">
@@ -84,10 +84,7 @@
                         <tbody>
                             @foreach ($categories as $category)
                             <tr>
-                                <td>
-                                    <label style='background:{{$category->color}};padding-right:20px'>&nbsp;</label>
-                                    {{ $category->title }}
-                                </td>
+                                <td>{{ $category->title }}</td>
                                 <td>{{ $category->name }}</td>
                                 <td>
                                     @if($category->status)
@@ -97,8 +94,9 @@
                                     @endif
                                 </td>
                                 <td>
+                                    
                                     <button type="button" title="View" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#viewCategoryModal{{ $category->id }}">
-                                        <i class="align-middle" data-lucide="eye" style=" color: #3f80ea; width: 20px;height: 20px;"></i>
+                                        <i class="align-middle" data-lucide="eye" style="color: #3f80ea;width: 20px;height: 20px;"></i>
                                     </button>
 
                                     <!-- View Category Modal -->
@@ -107,24 +105,18 @@
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h5 class="modal-title" id="viewCategoryModalLabel{{ $category->id }}">
-                                                        View Event Category
+                                                        View Message Category
                                                     </h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
                                                     <div class="form-group">
                                                         <label for="viewTitle{{ $category->id }}">Title</label>
-                                                        <input
-                                                            type="text"
-                                                            class="form-control"
-                                                            id="viewTitle{{ $category->id }}"
-                                                            value="{{ $category->title }}"
-                                                            readonly
-                                                        />
+                                                        <input type="text" class="form-control" id="viewTitle{{ $category->id }}" value="{{ $category->title }}" readonly/>
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label for="viewDescription{{ $category->id }}" >Description</label>
+                                                        <label for="viewDescription{{ $category->id }}">Description</label>
                                                         <textarea
                                                             style="
                                                                 max-height: 150px;
@@ -137,18 +129,10 @@
                                                         >
                                                     </div>
 
-                                                    <div class="form-group">
-                                                        <label for="viewColor">Color</label>
-                                                        <input 
-                                                            type="color" 
-                                                            class="form-control form-control-color" 
-                                                            id="viewColor" name="viewColor" value="{{$category->color}}" title="Choose a color"  disabled>
-                                                    </div>
-                                                    <div class="form-group">
+                                                     <div class="form-group">
                                                         <label for="viewCampus{{ $category->id }}">Campus</label>
                                                         <input type="text" class="form-control" id="viewCampus{{ $category->id }}" value="{{ $category->name }}" readonly/>
                                                     </div>
-                                                    <br>
                                                     <div class="form-group">
                                                         <label for="viewStatus{{ $category->id }}">Status</label>
                                                          @if($category->status)
@@ -167,27 +151,27 @@
                                         </div>
                                     </div>
 
-                                     @if($category->status ==0 )
+                                    @if($category->status==0)
                                         <button type="button" title="Edit" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editCategoryModal{{ $category->id }}">
                                             <i class="align-middle" data-lucide="pencil" style="color: #e5a54b;width: 20px;height: 20px;"></i>
                                         </button>
-    
+
                                         <!-- Edit Category Modal -->
-    
-                                        <div class="modal fade" id="editCategoryModal{{ $category->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+
+                                        <div class="modal fade" id="editCategoryModal{{ $category->id }}" tabindex="-1" role="dialog" >
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
-                                                    <form id="editCategoryForm{{ $category->id }}" action="{{ route('event-categories.update', $category->id) }}" method="POST" onsubmit="return validateEditForm('{{$category->id}}')">
+                                                    <form id="editCategoryForm{{ $category->id }}" action="{{ route('message-categories.update', $category->id) }}" method="POST" onsubmit="return validateEditForm('{{$category->id}}')">
                                                         @csrf @method('PUT')
                                                         <div class="modal-header">
                                                             <h5 class="modal-title" id="editCategoryModalLabel{{ $category->id }}">
-                                                                Edit Event Category
+                                                                Edit Message Category
                                                             </h5>
                                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                         </div>
                                                         <div class="modal-body">
                                                             <div class="form-group">
-                                                                <label for="title{{ $category->id }}">Title</label>
+                                                                <label for="title{{ $category->id }}" >Title</label>
                                                                 <input
                                                                     type="text"
                                                                     class="form-control @error('title') is-invalid @enderror"
@@ -204,7 +188,7 @@
                                                                 </div>
                                                                 @enderror
                                                             </div>
-    
+
                                                             <div class="form-group">
                                                                 <label for="description{{ $category->id }}">Description</label>
                                                                 <textarea
@@ -225,15 +209,6 @@
                                                                 </div>
                                                                 @enderror
                                                             </div>
-    
-                                                            <div class="form-group">
-                                                                <label for="viewColor">Color</label>
-                                                                <input 
-                                                                    type="color" 
-                                                                    class="form-control form-control-color" 
-                                                                    id="color" name="color" value="{{$category->color}}" title="Choose a color" >
-                                                            </div>
-    
                                                             <div class="form-group">
                                                                 <label for="campus{{ $category->id }}">Campus</label>
                                                                 <select class="form-control" id="campusId{{ $category->id }}" name="campusId">
@@ -246,29 +221,29 @@
                                                                     @endforeach
                                                                 </select>
                                                             </div>
-    
+                                                            
                                                         </div>
                                                         <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                                    Close
-                                                                </button>
-                                                                <button type="submit" class="btn btn-primary">
-                                                                    Save Changes
-                                                                </button>
-                                                            </div>
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                                Close
+                                                            </button>
+                                                            <button type="submit" class="btn btn-primary">
+                                                                Save Changes
+                                                            </button>
+                                                        </div>
                                                     </form>
                                                 </div>
                                             </div>
                                         </div>
-    
-                                        <form action="{{ route( 'event-categories.destroy', $category)}}" method="POST" style="display: inline" onsubmit="return confirm('Are you sure you want to delete this category?');">
+
+                                        <form action="{{ route( 'message-categories.destroy', $category)}}" method="POST" style="display: inline" onsubmit="return confirm('Are you sure you want to delete this category?');">
                                             @csrf @method('DELETE')
-    
+
                                             <button class="btn btn-icon" type="submit" title="Delete" style="padding: 0px">
                                                 <i class="align-middle" data-lucide="trash" style="color: #d9534f;width: 20px;height: 20px;"></i>
                                             </button>
                                         </form>
-                                     @endif
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach
@@ -279,19 +254,14 @@
             </div>
 
             <!-- Add Category Modal -->
-            <div class="modal fade" id="addCategoryModel" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal fade" id="addCategoryModel" abindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
-                        <form 
-                            id="addCategoryForm"
-                            action="{{ route('event-categories.store') }}"
-                            method="POST"
-                            onsubmit="return validateForm()"
-                        >
+                        <form id="addCategoryForm" action="{{ route('message-categories.store') }}" method="POST" onsubmit="return validateForm()">
                             @csrf
                             <div class="modal-header">
                                 <h5 class="modal-title" id="addCategoryModalLabel">
-                                    Add Event Category
+                                    Add Message Category
                                 </h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
@@ -331,13 +301,6 @@
                                     </div>
                                     @enderror
                                 </div>
-                                <div class="form-group">
-                                    <label for="color">Color</label>
-                                    <input 
-                                        type="color" 
-                                        class="form-control form-control-color" 
-                                        id="color" name="color" value="#CCCCCC" title="Choose a color">
-                                </div>
 
                                 <div class="form-group">
                                     <label for="campusId">Campus</label>
@@ -347,7 +310,7 @@
                                         @endforeach
                                     </select>
                                 </div>
-                            </div> 
+                            </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                     Close

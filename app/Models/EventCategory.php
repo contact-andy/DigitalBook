@@ -14,6 +14,7 @@ class EventCategory extends Model
         'title',
         'description',  
         'color',
+        'campusId',
         'status',
         'created_by',
         'updated_by',

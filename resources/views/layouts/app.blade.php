@@ -26,6 +26,7 @@
             content="Digital Communication Book"
         />
         <meta name="author" content="Bootlab" />
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>@yield('title', '') - {{ config("app.name") }}</title>
         <link rel="stylesheet" href="{{ mix('css/layout.css') }}" />
         <!-- <link rel="stylesheet" href="{{ mix('css/app.css') }}" /> -->

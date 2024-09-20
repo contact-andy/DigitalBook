@@ -85,6 +85,18 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('dashboard-setting', DashboardSettingController::class)->middleware('application.permission');
     Route::resource('message-setting', MessageSettingController::class)->middleware('application.permission');
+
+    //APPROVAL
+    Route::get('category-approval', [MessageCategoryController::class, 'categoryApproval'])->name('category-approval.index')->middleware('application.permission');
+    Route::put('category-approval', [MessageCategoryController::class, 'approve'])->name('category-approval.approve')->middleware('application.permission');
+    Route::post('/category-approval/instantApprove', [MessageCategoryController::class, 'instantApprove'])->name('category-approval.instantApprove');
+
+    Route::get('event-approval', [EventCategoryController::class, 'eventApproval'])->name('event-approval.index')->middleware('application.permission');
+    Route::put('event-approval', [EventCategoryController::class, 'approve'])->name('event-approval.approve')->middleware('application.permission');
+    Route::post('/event-approval/instantApprove', [EventCategoryController::class, 'instantApprove'])->name('event-approval.instantApprove');
+
+    // Route::get('/category-approval/instantApprove/{id}', [MessageCategoryController::class, 'instantApprove'])->name('category-approval.instantApprove');
+
 });
 
 

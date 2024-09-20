@@ -187,7 +187,7 @@
                                         </div>
                                     </div>
 
-                                    @if($surveyQuestion->status)
+                                    @if($surveyQuestion->status == 0)
                                         <button type="button" title="Edit" class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#editSurveyQuestionModel{{ $surveyQuestion->id }}">
                                             <i class="align-middle" data-lucide="pencil" style=" color: #e5a54b; width: 20px; height: 20px;"></i>
                                         </button>

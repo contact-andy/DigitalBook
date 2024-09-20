@@ -92,7 +92,7 @@
                         <tr>
                             <th>Content</th>
                             <th class="text-end">#Total</th>
-                            <th class="d-none d-xl-table-cell w-75">% Completed</th>
+                            <th class="d-none d-xl-table-cell w-75">% Completion</th>
                         </tr>
                     </thead>
                     <tbody>

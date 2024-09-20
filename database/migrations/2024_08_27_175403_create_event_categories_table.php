@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('color');
-            // $table->unsignedBigInteger('campusId')->unsigned();
+            $table->unsignedBigInteger('campusId')->unsigned();
             $table->boolean('status')->default(0);
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->softDeletes();
 
             // Foreign key constraints
-            // $table->foreign('campusId')->references('id')->on('campuses')->onDelete('cascade');
+            $table->foreign('campusId')->references('id')->on('campuses')->onDelete('cascade');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             
