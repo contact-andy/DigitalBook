@@ -6,7 +6,6 @@ use App\Http\Controllers\MessageTemplateController;
 use App\Http\Controllers\ResponseTemplateController;
 use App\Http\Controllers\PublishMessageController;
 use App\Http\Controllers\MessageApprovalController;
-use App\Http\Controllers\TemplateApprovalController;
 
 use App\Http\Controllers\EventCategoryController;
 use App\Http\Controllers\AcademicCalendarController;
@@ -26,8 +25,11 @@ use App\Http\Controllers\SurveyResponseReportController;
 
 use App\Http\Controllers\DashboardSettingController;
 use App\Http\Controllers\MessageSettingController;
-use App\Http\Middleware\CheckApplicationPermission;
 
+use App\Http\Controllers\MessageTemplateApprovalController;
+
+
+use App\Http\Middleware\CheckApplicationPermission;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -62,9 +64,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('message-templates', MessageTemplateController::class)->middleware('application.permission');
     Route::resource('response-templates', ResponseTemplateController::class)->middleware('application.permission');
     Route::resource('publish-messages', PublishMessageController::class)->middleware('application.permission');
-    Route::resource('message-approval', MessageApprovalController::class)->middleware('application.permission');
-    Route::resource('template-approval', TemplateApprovalController::class)->middleware('application.permission');
-
+    
     Route::resource('event-categories', EventCategoryController::class)->middleware('application.permission');
     Route::resource('academic-calendars', AcademicCalendarController::class)->middleware('application.permission');
     Route::resource('publish-calendars', PublishCalendarController::class)->middleware('application.permission');
@@ -95,6 +95,9 @@ Route::middleware('auth')->group(function () {
     Route::get('event-approval', [EventCategoryController::class, 'eventApproval'])->name('event-approval.index')->middleware('application.permission');
     Route::put('event-approval', [EventCategoryController::class, 'approve'])->name('event-approval.approve')->middleware('application.permission');
     Route::post('/event-approval/instantApprove', [EventCategoryController::class, 'instantApprove'])->name('event-approval.instantApprove');
+
+    Route::resource('message-approval', MessageApprovalController::class)->middleware('application.permission');
+    Route::resource('message-template-approval', MessageTemplateApprovalController::class)->middleware('application.permission');
 
     // Route::get('/category-approval/instantApprove/{id}', [MessageCategoryController::class, 'instantApprove'])->name('category-approval.instantApprove');
 

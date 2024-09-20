@@ -24,7 +24,7 @@ class AcademicCalendarController extends Controller
     public function index()
     {
         // Fetch Campus Permission
-        $applicationListURL = 'event-categories'; 
+        $applicationListURL = 'academic-calendars'; 
         $applicationList = DcbApplicationList::where('url',$applicationListURL)->first(); 
         $applicationListId = $applicationList->id;
         $campusPermissions = DcbApplicationPermission::where('userId', Auth::id())
