@@ -1,5 +1,5 @@
 @extends('layouts.app') 
-@section('title', 'Category Approval')
+@section('title', 'Event Approval')
 @section('content')
 <div class="container-fluid p-0">
     @if(session('success'))
@@ -52,7 +52,7 @@
 
     <div class="row mb-2 mb-xl-3">
         <div class="col-auto d-none d-sm-block">
-            <h3>Category Approval</h3>
+            <h3>Event Approval</h3>
         </div>
     </div>
 
@@ -73,7 +73,10 @@
                         <tbody>
                             @foreach ($categories as $category)
                             <tr>
-                                <td>{{ $category->title }}</td>
+                                <td>
+                                    <label style='background:{{$category->color}};padding-right:20px'>&nbsp;</label>
+                                    {{ $category->title }}
+                                </td>
                                 <td>{{ $category->name }}</td>
                                 <td id="statusView{{ $category->id }}">
                                     @if($category->status)
@@ -82,6 +85,7 @@
                                         <span class='badge text-bg-danger'>Not Approved</span>
                                     @endif
                                     
+                                    </div>
                                     
                                 </td>
                                 <td>{{ $category->comment }}</td>
@@ -94,11 +98,11 @@
                                     <div class="modal fade" id="approveCategoryModal{{ $category->id }}" tabindex="-1" role="dialog" >
                                         <div class="modal-dialog">
                                             <div class="modal-content">
-                                                    <form id="approveCategoryForm{{ $category->id }}" action="{{ route('category-approval.approve', $category->id) }}" method="POST">
+                                                    <form id="approveCategoryForm{{ $category->id }}" action="{{ route('event-approval.approve', $category->id) }}" method="POST">
                                                         @csrf @method('PUT')                                                    
                                                     <div class="modal-header">
                                                         <h5 class="modal-title" id="approveCategoryModalLabel{{ $category->id }}">
-                                                            Approve Message Category 
+                                                            Approve Event Category 
                                                             @if($category->status)
                                                                 <span class='badge text-bg-success'>Approved</span>
                                                             @else
@@ -160,6 +164,15 @@
                                                             </div>
                                                             @enderror
                                                         </div>
+
+                                                        <div class="form-group">
+                                                            <label for="color">Color</label>
+                                                            <input 
+                                                                type="color" 
+                                                                class="form-control form-control-color" 
+                                                                id="color" name="color" value="{{$category->color}}" title="Choose a color" readonly>
+                                                        </div>
+                                                        
                                                         <hr />
                                                         <div class="form-group">
                                                             <label for="comment{{ $category->id }}">Comment</label>
@@ -242,7 +255,7 @@
                     // alert(categoryId)
                     document.getElementById("statusView"+categoryId).innerHTML = "<span class='badge text-bg-primary'>Pending . . .</span>";
                     $.ajax({
-                        url: '{{ route('category-approval.instantApprove') }}',
+                        url: '{{ route('event-approval.instantApprove') }}',
                         method: 'POST',
                         data: {
                             _token: '{{ csrf_token() }}',

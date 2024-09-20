@@ -208,7 +208,7 @@ class EventCategoryController extends Controller
         ->whereIn('campusId', $campusPermissions)
         ->where('created_by', Auth::id())
         ->get();
-        return view('category_approval.index', [
+        return view('event_approval.index', [
             'categories'=>$categories,
             'campuses'=>$campuses,
         ]);
@@ -220,6 +220,7 @@ class EventCategoryController extends Controller
             'title' =>  'required',
             'description' => 'nullable|string',
             'campusId' => 'required',
+            'color' => 'required',
         ]);
         $campusId = $request->get('campusId');;
         $checkUniqueCount = EventCategory::where('title',  $request->get('title'))
@@ -237,14 +238,14 @@ class EventCategoryController extends Controller
             $eventCategory->updated_by = auth()->id();
 
             if ($eventCategory->save()) {
-                return redirect()->route('event-approval.index')->with('success', 'Message category status [UPDATED] successfully!');
+                return redirect()->route('event-approval.index')->with('success', 'Event category status [UPDATED] successfully!');
             } else {
-                return redirect()->route('event-approval.index')->with('error', 'Failed to [UPDATE] message category status!');
+                return redirect()->route('event-approval.index')->with('error', 'Failed to [UPDATE] event category status!');
             }
         }
         else 
         {
-            return redirect()->route('event-approval.index')->with('error', 'Failed to [UPDATE] message category status, [REPATED TITLE]!');
+            return redirect()->route('event-approval.index')->with('error', 'Failed to [UPDATE] event category status, [REPATED TITLE]!');
         }
     }
     public function instantApprove(Request $request)
@@ -256,9 +257,9 @@ class EventCategoryController extends Controller
             $eventCategory->updated_by = Auth::id();
             $eventCategory->save();
 
-            return response()->json(['success' => true, 'message' => 'Message category approved successfully.']);
+            return response()->json(['success' => true, 'message' => 'Event category approved successfully.']);
         }
 
-        return response()->json(['success' => false, 'message' => 'Message category not found.'], 404);
+        return response()->json(['success' => false, 'message' => 'Event category not found.'], 404);
     }
 }

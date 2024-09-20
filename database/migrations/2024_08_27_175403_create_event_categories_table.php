@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('color');
             $table->unsignedBigInteger('campusId')->unsigned();
             $table->boolean('status')->default(0);
+            $table->string('comment')->nullable();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->timestamps();
