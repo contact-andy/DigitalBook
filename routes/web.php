@@ -68,6 +68,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('event-categories', EventCategoryController::class)->middleware('application.permission');
     Route::resource('academic-calendars', AcademicCalendarController::class)->middleware('application.permission');
     Route::resource('publish-calendars', PublishCalendarController::class)->middleware('application.permission');
+    Route::post('/after-campus-selection', [AcademicCalendarController::class, 'afterCampusSelection'])->name('after-campus-selection');
 
     Route::resource('surveys', SurveyController::class)->middleware('application.permission');
     Route::resource('survey-questions', SurveyQuestionController::class)->middleware('application.permission');

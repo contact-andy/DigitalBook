@@ -2,8 +2,33 @@
 @section('title', 'Academic Calendar')
 @section('content')
     <div class="container-fluid p-0">
-
-        <h1 class="h3 mb-3">Academic Calendar</h1>
+        
+        @php
+            $selectedCampus = 0;
+            $selectedCampusName = "EMPTy";
+            if(session('selectedCampus')){
+                $selectedCampus = session("selectedCampus");         
+                foreach($campuses as $campus){
+                    if($campus->id == $selectedCampus){
+                        $selectedCampusName = $campus->name;
+                        break;
+                    }
+                }
+            }
+            else{
+                foreach($campuses as $campus){
+                    $selectedCampusName = $campus->name;
+                    $selectedCampus = $campus->id;
+                    break;
+                }
+            }
+        @endphp 
+        <h1 class="h3 mb-3">
+            <span class='badge text-bg-primary' style="font-size: 12px;font-weight:300;padding:10px;">
+                {{$selectedCampusName}}
+            </span>  
+            Academic Calendar
+        </h1>
         <div class="row">
             <div class="col-sm-5 col-xl-4">
                 <div class="card">
@@ -54,56 +79,76 @@
                                 </div>
                             </div>
                         @endif
+
+                        <form id="campusSelectionForm" name="campusSelectionForm" action="{{ route('after-campus-selection') }}" method="POST">
+                            @csrf
+                            <div class="form-group">
+                                <label for="campusId">Campus</label>
+                                <select class="form-control" id="campusId" name="campusId" onChange="campusSelectionForm.submit();">
+                                    @foreach($campuses as $campus)
+                                        @if($campus->id == $selectedCampus)
+                                            <option value="{{$campus->id}}" selected>{{$campus->name}}</option>
+                                        @else
+                                            <option value="{{$campus->id}}">{{$campus->name}}</option>
+                                        @endif
+                                    @endforeach
+                                </select>
+                            </div>
+                        </form>
+                        
+                        <hr/>           
                         <h6 class="text-uppercase">Recent Events</h6>
                           @foreach ($recentEvents as $rEvent)
-                          @php
-                                $eventDateColl = explode('-',$rEvent->start_date);
-                                $monthNum = $eventDateColl[1];
-                                $dayNum = $eventDateColl[2];
-                                $monthName = strtoupper(date("M", mktime(0, 0, 0, $monthNum, 10)));
-                                $description = $rEvent->description;
-                                if(strlen($description)>50)
-                                $description = substr($rEvent->description,0,50)."...";
-                          @endphp
-                            <div class="d-flex" data-bs-toggle="modal" data-bs-target="#viewCalendarModal{{ $rEvent->id }}" >
-                                <div class="flex-grow-0" style='color:white;background:{{$rEvent->color}};text-align:center;vertical-align:center;padding:5px;margin-right:5px;height:45px;width:50px;'>
-                                    <h6 class="m-0" style='color:white'>{{$monthName}}</h6>
-                                    <p class=" text-sm" style='font-size:25px;margin-top:-10px;color:white;'>{{$dayNum}}</p>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h6 class="m-0">{{$rEvent->title}}</h6>
-                                    <p class="text-muted text-sm">{{$description}}</p>
-                                </div>
-                            </div>     
-                            
-                            {{-- View Calendar Event --}}
-                            <div class="modal fade" id="viewCalendarModal{{ $rEvent->id }}" tabindex="-1" role="dialog" aria-hidden="true">
-                                <div class="modal-dialog">
-                                    <div class="modal-content">
-                                        <div class="d-flex">
-                                            <div class="flex-grow-0" id='dateView' style='color:white;background:{{$rEvent->color}};
-                                            text-align:center;vertical-align:center;padding:5px;margin-right:5px;height:300px;width:200px;display:flex;flex-direction:column;
-                                            justify-content:center'>
-                                                <h6 class="m-0" style='color:#ffffff;font-size:70px;margin-top:50px;' id='monthNameView'>{{$monthName}}</h6>
-                                                <p class=" text-sm" style='font-size:125px;margin-top:-20px;color:white;' id='dayNumView'>{{$dayNum}}</p>
-                                            </div>
-                                            <div class="flex-grow-1"  style='margin:10px'>
-                                                <h3 class="m-0" id='titleView'>{{$rEvent->title}}</h3>
-                                                <div  style='margin:0px'>
-                                                    <p class="text-muted text-sm" style='font-size:14px;margin:0px;'>
-                                                        Start-Date:
-                                                        <b class="m-0" id='startDateView'>{{$rEvent->start_date}}</b>
-                                                    | 
-                                                        End-Date:
-                                                        <b class="m-0" id='endDateView'>{{$rEvent->end_date}}</b>
-                                                    </p>
+                            @if($rEvent->campusId == $selectedCampus)
+                                @php
+                                        $eventDateColl = explode('-',$rEvent->start_date);
+                                        $monthNum = $eventDateColl[1];
+                                        $dayNum = $eventDateColl[2];
+                                        $monthName = strtoupper(date("M", mktime(0, 0, 0, $monthNum, 10)));
+                                        $description = $rEvent->description;
+                                        if(strlen($description)>50)
+                                        $description = substr($rEvent->description,0,50)."...";
+                                @endphp
+                                <div class="d-flex" data-bs-toggle="modal" data-bs-target="#viewCalendarModal{{ $rEvent->id }}" >
+                                    <div class="flex-grow-0" style='color:white;background:{{$rEvent->color}};text-align:center;vertical-align:center;padding:5px;margin-right:5px;height:45px;width:50px;'>
+                                        <h6 class="m-0" style='color:white'>{{$monthName}}</h6>
+                                        <p class=" text-sm" style='font-size:25px;margin-top:-10px;color:white;'>{{$dayNum}}</p>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="m-0">{{$rEvent->title}}</h6>
+                                        <p class="text-muted text-sm">{{$description}}</p>
+                                    </div>
+                                </div>     
+                                
+                                {{-- View Calendar Event --}}
+                                <div class="modal fade" id="viewCalendarModal{{ $rEvent->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="d-flex">
+                                                <div class="flex-grow-0" id='dateView' style='color:white;background:{{$rEvent->color}};
+                                                text-align:center;vertical-align:center;padding:5px;margin-right:5px;height:300px;width:200px;display:flex;flex-direction:column;
+                                                justify-content:center'>
+                                                    <h6 class="m-0" style='color:#ffffff;font-size:70px;margin-top:50px;' id='monthNameView'>{{$monthName}}</h6>
+                                                    <p class=" text-sm" style='font-size:125px;margin-top:-20px;color:white;' id='dayNumView'>{{$dayNum}}</p>
                                                 </div>
-                                                <p class="text-muted text-sm" style='font-size:14px;' id='descriptionView'>{{$rEvent->description}}</p>
-                                            </div>
-                                        </div> 
+                                                <div class="flex-grow-1"  style='margin:10px'>
+                                                    <h3 class="m-0" id='titleView'>{{$rEvent->title}}</h3>
+                                                    <div  style='margin:0px'>
+                                                        <p class="text-muted text-sm" style='font-size:14px;margin:0px;'>
+                                                            Start-Date:
+                                                            <b class="m-0" id='startDateView'>{{$rEvent->start_date}}</b>
+                                                        | 
+                                                            End-Date:
+                                                            <b class="m-0" id='endDateView'>{{$rEvent->end_date}}</b>
+                                                        </p>
+                                                    </div>
+                                                    <p class="text-muted text-sm" style='font-size:14px;' id='descriptionView'>{{$rEvent->description}}</p>
+                                                </div>
+                                            </div> 
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            @endif
 
                         @endforeach
                     </div>
@@ -129,8 +174,12 @@
                         onsubmit="return validateForm()"
                     >
                         @csrf
+                        <input type="hidden" id="campusId" name="campusId" value="{{$selectedCampus}}" required />
                         <div class="modal-header">
                             <h5 class="modal-title" id="addResponseTemplateModalLabel">
+                                <span class='badge text-bg-primary' style="font-size: 12px;font-weight:300;padding:10px;">
+                                    {{$selectedCampusName}}
+                                </span>  
                                 Add New Calendar Event
                             </h5>
                             <button
@@ -145,9 +194,11 @@
                                 <label for="eventCategoryId">Event Category</label>
                                 <select class="form-control" id="eventCategoryId" name="eventCategoryId" required>
                                     @foreach ($categories as $category)
-                                        <option value="{{$category->id}}">
-                                            {{$category->title}}
-                                        </option>
+                                        @if($category->campusId == $selectedCampus)
+                                            <option value="{{$category->id}}">
+                                                {{$category->title}}
+                                            </option>
+                                        @endif
                                     @endforeach
                                 </select>
                             </div>
@@ -311,7 +362,9 @@
                                 <label for="editEventCategoryId">Event Category</label>
                                 <select class="form-control" id="editEventCategoryId" name="editEventCategoryId">
                                     @foreach($categories as $category)
-                                        <option value="{{$category->id}}">{{$category->title}}</option>
+                                        @if($category->campusId == $selectedCampus)
+                                            <option value="{{$category->id}}">{{$category->title}}</option>
+                                        @endif
                                     @endforeach
                                 </select>
                             </div>
@@ -417,6 +470,17 @@
     <script>
         // Convert Laravel's PHP event collection to JSON
         let events = @json($calendars);
+        let selectedCampusId = parseInt(@json($selectedCampus));
+        let filteredEvents = events.filter((event) => {
+            console.log(event.campusId + " and " + selectedCampusId)
+            console.log(event.campusId  === selectedCampusId)
+            console.log(typeof(event.campusId))
+            console.log(typeof(selectedCampusId))
+            return event.campusId  === selectedCampusId;
+        });
+        events = filteredEvents
+        // console.log(selectedCampusId)
+        console.log(filteredEvents)
         console.log(events)
         let today = new Date();
         let dd = today.getDate()>9?today.getDate():'0'+today.getDate();

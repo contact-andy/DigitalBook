@@ -4,19 +4,43 @@ namespace App\Http\Controllers;
 
 use App\Models\AcademicCalendar;
 use App\Models\EventCategory;
+use App\Models\Campuse;
+use App\Models\DcbApplicationPermission;
+use App\Models\DcbApplicationList;
+use App\Models\GeneralSetting;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AcademicCalendarController extends Controller
 {
+    public function afterCampusSelection(Request $request)
+    {
+        // Get the selected category from the form
+        $selectedCampus = $request->input('campusId');
+        // Process the selected user (e.g., save to database or redirect)
+        return redirect()->back()->with('selectedCampus', $selectedCampus);
+    }
     public function index()
     {
-        $calendars = AcademicCalendar::select('academic_calendars.*', 'event_categories.color','event_categories.id as catId')
+        // Fetch Campus Permission
+        $applicationListURL = 'event-categories'; 
+        $applicationList = DcbApplicationList::where('url',$applicationListURL)->first(); 
+        $applicationListId = $applicationList->id;
+        $campusPermissions = DcbApplicationPermission::where('userId', Auth::id())
+        ->where('appId', $applicationListId)->pluck('campusId')->toArray();
+        $campuses =  Campuse::whereIn('id', $campusPermissions)->get();
+
+        $calendars = AcademicCalendar::select('academic_calendars.*', 'event_categories.color','event_categories.id as catId','campuses.name','campuses.id as campId')
         ->join('event_categories', 'event_categories.id', '=', 'academic_calendars.eventCategoryId')
+        ->join('campuses', 'campuses.id', '=', 'academic_calendars.campusId')
+        ->whereIn('academic_calendars.campusId', $campusPermissions)
+        ->where('academic_calendars.created_by', Auth::id())
         ->get();
 
         $recentEvents = AcademicCalendar::select('academic_calendars.*', 'event_categories.color','event_categories.id as catId')
         ->join('event_categories', 'event_categories.id', '=', 'academic_calendars.eventCategoryId')
+        ->join('campuses', 'campuses.id', '=', 'academic_calendars.campusId')
         // ->whereDate('start_date','>=', date('Y-m-d'))
         ->whereDate('end_date','>=', date('Y-m-d'))
         ->orderBy('start_date', 'ASC')->get();
@@ -24,7 +48,8 @@ class AcademicCalendarController extends Controller
         return view('academic_calendars.index', [
             'calendars'=>$calendars,
             'recentEvents'=>$recentEvents,
-            'categories'=>$categories
+            'categories'=>$categories,
+            'campuses'=>$campuses,
         ]);
     }
 
@@ -35,16 +60,19 @@ class AcademicCalendarController extends Controller
 
     public function store(Request $request)
     {
-        $academicYear = 2017;
+        $settingData = GeneralSetting::orderBy('id','desc')->first();
+        $academicYear = $settingData->academicYear;
         $request->validate([
             'title' => 'required|string|max:255',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
+            'campusId'=>'required',
         ]);
         // return $request->get('end_date');
         $event = new AcademicCalendar([
             'title' => $request->get('title'),
             'description' => $request->get('description'),
+            'campusId' => $request->get('campusId'),
             'start_date' => $request->get('start_date'),
             'end_date' => $request->get('end_date'),
             'eventCategoryId' => $request->get('eventCategoryId'),
@@ -86,7 +114,8 @@ class AcademicCalendarController extends Controller
         $editEnd_date = $request->get('editEnd_date');
         $editEventCategoryId = $request->get('editEventCategoryId');
         $editStatus = $request->get('editStatus');
-        $academicYear = 2017;
+        $settingData = GeneralSetting::orderBy('id','desc')->first();
+        $academicYear = $settingData->academicYear;
 
         $res = AcademicCalendar::where('id',$id)->update([
             'title' => $request->get('editTitle'),

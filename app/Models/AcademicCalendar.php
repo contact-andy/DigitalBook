@@ -16,6 +16,7 @@ class AcademicCalendar extends Model
         'start_date', 
         'end_date', 
         'eventCategoryId',
+        'campusId',
         'status',
         'academicYear',        
         'created_by',
