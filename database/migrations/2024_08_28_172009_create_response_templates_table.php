@@ -17,10 +17,13 @@ return new class extends Migration
             $table->string('content'); 
             $table->unsignedBigInteger('messageTemplateId');
             $table->unsignedBigInteger('campusId')->unsigned();
-            $table->boolean('status')->default(0);
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
-            $table->string('comment')->nullable();
+            $table->boolean('content_ok')->default(false); // Checkbox for content
+            $table->boolean('grammar_ok')->default(false); // Checkbox for grammar
+            $table->boolean('spelling_ok')->default(false); // Checkbox for spelling
+            $table->text('comment')->nullable(); // Optional comments
+            $table->unsignedBigInteger('approved_by')->nullable(); // Who approved the template            
             $table->timestamps();
             $table->softDeletes();
 
@@ -29,6 +32,8 @@ return new class extends Migration
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('messageTemplateId')->references('id')->on('message_templates')->onDelete('cascade');
+            $table->foreign('approved_by')->references('id')->on('users')->onDelete('cascade');
+
         });
     }
 

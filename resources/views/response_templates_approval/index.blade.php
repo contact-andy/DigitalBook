@@ -1,4 +1,4 @@
-@extends('layouts.app') @section('title', 'Message Templates Approval')
+@extends('layouts.app') @section('title', 'Response Templates Approval')
 @section('content')
 <div class="container-fluid p-0">
     @if(session('success'))
@@ -71,7 +71,7 @@
 
     <div class="row mb-2 mb-xl-3">
         <div class="col-auto d-none d-sm-block">
-            <h3>Message Templates Approval</h3>
+            <h3>Response Templates Approval</h3>
         </div>
 
     </div>
@@ -83,9 +83,9 @@
                     <table id="datatables-fixed-header" class="table table-striped w-100">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Title</th>
-                                <th>Content OK?</th>
+                                <th>Response Message</th>
+                                <th>Response For</th>
+                                <th>Content OK?</th> 
                                 <th>grammar OK?</th>
                                 <th>Spelling OK?</th>
                                 <th>Comment</th>
@@ -101,11 +101,9 @@
                                     $spellingOk =$template->spelling_ok;
                                     $comment =$template->comment;
                                 @endphp
-                                <td>{{ $template->id}}</td>
+                                {{-- <td>{{ $template->id}}</td> --}}
                                 <td style="width: 40%">
                                     {{ $template->content }}
-                                    <br>
-                                    <span class='badge text-bg-info'>{{ ucfirst($template->type) }} {{ $template->type=='single'?' student':' students' }}</span>
                                     <br>
                                     <div id="statusView{{ $template->id }}">
                                         @if($contentOk == 1 && $grammarOk == 1 && $spellingOk == 1)
@@ -114,6 +112,15 @@
                                             <span class='badge text-bg-danger'>Not Approved</span>
                                         @endif
                                     </div>
+                                </td>
+                                <td>
+                                    <button class="btn " 
+                                        type="button" 
+                                        data-bs-toggle="tooltip" 
+                                        data-bs-placement="bottom" 
+                                        title="{{ $template->tempContent }}">
+                                        Template-{{ $template->tempId }} 
+                                    </button>
                                 </td>
                                 <td>
                                     <select class="form-control" id="contentOk{{$template->id}}" name="contentOk{{$template->id}}" onchange="updateOtherSelection({{$template->id}},'contentOk','')">
@@ -151,18 +158,6 @@
                                 
                                 <td>{{ $comment }}</td>
                                 <td>
-                                    @php
-                                        $gLevels = json_decode($template->gradeLevels, true);
-                                        $gLevelArray = array();
-                                        foreach($gLevels as $gLevel){
-                                            foreach ($gradeLevels as $gradeLevel)
-                                            if($gLevel==$gradeLevel->id){
-                                                $gLevelArray[] =$gradeLevel->level;
-                                                break;
-                                            }
-                                        }
-                                        $jsonString = json_encode($gLevelArray);
-                                    @endphp
                                     
                                     <!-- Approve Message Template Modal -->
 
@@ -175,7 +170,7 @@
                                                 
                                                 <div class="modal-header">
                                                     <h5 class="modal-title" id="viewTemplateModalLabel{{ $template->id }}">
-                                                        View Message Template 
+                                                        View Response Template 
                                                         <div id="viewStatus{{ $template->id }}" style='display:inline;'>
                                                             @if($contentOk == 1 && $grammarOk == 1 && $spellingOk == 1)
                                                                 <span class='badge text-bg-success'>Approved</span>
@@ -186,80 +181,44 @@
                                                     </h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
-                                                <form id="saveTemplateForm{{ $template->id }}" action="{{ route('message-templates-approval.approve', $template->id) }}"  method="POST">
+                                                <form id="saveTemplateForm{{ $template->id }}" action="{{ route('response-templates-approval.approve', $template->id) }}"  method="POST">
                                                     @csrf @method('PUT')
                                                     <input type="hidden" id="id{{ $template->id }}" name="id" value="{{ $template->id }}" required readonly/>
                                                     <div class="modal-body">
-                                                        <div class="row">
-                                                            <div class="col-12 col-md-6 col-lg-6">
-                                                                <div class="form-group">
-                                                                    <label for="viewCampus{{ $template->id }}">Campus</label>
-                                                                    {{-- <input type="text" class="form-control" id="viewCampus{{ $template->id }}" name="campusId" value="{{ $template->name }}" readonly/> --}}
-                                                                    <select class="form-control" id="campusId{{ $template->id }}" name="campusId">
-                                                                        @foreach($campuses as $campus)
-                                                                            @if($template->campusId==$campus->id)
-                                                                                <option value="{{$campus->id}}">{{$campus->name}}</option>
-                                                                            @endif
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-12 col-md-6 col-lg-6">
-                                                                <div class="form-group">
-                                                                    <label for="viewTitle{{ $template->id }}">Message Category</label>
-                                                                    <select class="form-control" id="messageCategoryId{{ $template->id }}" name="messageCategoryId" required>
-                                                                        @foreach ($categories as $category)
-                                                                            @if($template->catId==$category->campusId)
-                                                                                <option value="{{$category->id}}">{{$category->title}}</option>
-                                                                            @endif
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                                
                                                         <div class="form-group">
-                                                            <label for="viewDescription{{ $template->id }}">Message Content</label>
-                                                            <textarea
-                                                                style="
-                                                                    max-height: 100px;
-                                                                    min-height: 100px;
-                                                                "
-                                                                class="form-control"
-                                                                id="viewContent{{ $template->id }}"
-                                                                name='content'
-                                                                readonly
-                                                                required
-                                                                >{{ $template->content }}</textarea
-                                                            >
+                                                            <label for="viewCampus{{ $template->id }}">Campus</label>
+                                                            <select class="form-control" id="campusId{{ $template->id }}" name="campusId">
+                                                                @foreach($campuses as $campus)
+                                                                    @if($template->campusId==$campus->id)
+                                                                        <option value="{{$campus->id}}">{{$campus->name}}</option>
+                                                                    @endif
+                                                                @endforeach
+                                                            </select>
                                                         </div>
-
                                                         <div class="row">
                                                             <div class="col-12 col-md-6 col-lg-6">
                                                                 <div class="form-group">
-                                                                    <label for="viewTitle{{ $template->id }}">Type(Works for **** student(s))</label>
-                                                                    <input
-                                                                        type="text"
+                                                                    <label for="viewTitle{{ $template->id }}">Message Template</label>
+                                                                    <textarea style="max-height: 150px;min-height: 150px;"
                                                                         class="form-control"
-                                                                        id="viewType{{ $template->id }}"
-                                                                        value="{{ ucfirst($template->type) }}"
-                                                                        name='type'
+                                                                        id="viewMessageTemplate{{ $template->id }}"
+                                                                        value="{{ $template->tempContent }}"
                                                                         readonly
-                                                                    />
+                                                                        >{{ $template->tempContent }}</textarea
+                                                                    >
                                                                 </div>
                                                             </div>
                                                             <div class="col-12 col-md-6 col-lg-6">
                                                                 <div class="form-group">
-                                                                    <label for="viewGradeLevels{{ $template->id }}">Applicable Grade-Level</label>
-                                                                    <input
-                                                                        type="text"
+                                                                    <label for="viewDescription{{ $template->id }}">Response Content</label >
+                                                                    <textarea style="max-height: 150px;min-height: 150px;"
                                                                         class="form-control"
-                                                                        id="viewGradeLevels{{ $template->id }}"
-                                                                        value="{{ $jsonString }}"
-                                                                        name='gradeLevels'
+                                                                        id="viewContent{{ $template->id }}"
                                                                         readonly
-                                                                    />
-                                                                </div> 
+                                                                        required
+                                                                        >{{ $template->content }}</textarea
+                                                                    >
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         
@@ -374,7 +333,7 @@
                     document.getElementById("statusView"+templateId).innerHTML = "<span class='badge text-bg-primary'>Pending . . .</span>";
                     document.getElementById("viewStatus"+templateId).innerHTML = "<span class='badge text-bg-primary'>Pending . . .</span>";
                     $.ajax({
-                        url: '{{ route('template-approval.instantApprove') }}',
+                        url: '{{ route('response-approval.instantApprove') }}',
                         method: 'POST',
                         data: {
                             _token: '{{ csrf_token() }}',

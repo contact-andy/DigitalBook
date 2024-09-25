@@ -62,19 +62,19 @@
         @php
             $messageCategoryTotal = DB::table('message_categories')->count();
             $messageCategoryApproved = DB::table('message_categories')->where('status',1)->count();
-            $mcProgressWidth = round(($messageCategoryApproved/$messageCategoryTotal)*100);
+            $mcProgressWidth = round(($messageCategoryTotal!=0?$messageCategoryApproved/$messageCategoryTotal:0)*100);
 
             $messageTemplateTotal = DB::table('message_templates')->count();
-            $messageTemplateApproved = DB::table('message_templates')->where('status',1)->count();
-            $mtProgressWidth = round(($messageTemplateApproved/$messageTemplateTotal)*100);
+            $messageTemplateApproved = DB::table('message_templates')->where('content_ok',1)->where('grammar_ok',1)->where('spelling_ok',1)->count();
+            $mtProgressWidth = round(($messageTemplateTotal!=0?$messageTemplateApproved/$messageTemplateTotal:0)*100);
 
             $responseTemplateTotal = DB::table('response_templates')->count();
-            $responseTemplateApproved = DB::table('response_templates')->where('status',1)->count();
-            $rtProgressWidth = round(($responseTemplateApproved/$responseTemplateTotal)*100);
+            $responseTemplateApproved = DB::table('response_templates')->where('content_ok',1)->where('grammar_ok',1)->where('spelling_ok',1)->count();
+            $rtProgressWidth = round(($responseTemplateTotal!=0?$responseTemplateApproved/$responseTemplateTotal:0)*100);
 
             $eventCategoryTotal = DB::table('event_categories')->count();
             $eventCategoryApproved = DB::table('event_categories')->where('status',1)->count();
-            $ecProgressWidth = round(($eventCategoryApproved/$eventCategoryTotal)*100);
+            $ecProgressWidth = round(($eventCategoryTotal!=0?$eventCategoryApproved/$eventCategoryTotal:0)*100);
 
             
             

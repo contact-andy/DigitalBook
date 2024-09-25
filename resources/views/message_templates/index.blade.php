@@ -129,7 +129,7 @@
 
                                 </td>
                                <td>
-                                    @if($template->status)
+                                    @if($template->content_ok == 1 && $template->grammar_ok == 1 && $template->spelling_ok == 1)
                                         <span class='badge text-bg-success'>Approved</span>
                                     @else
                                         <span class='badge text-bg-danger'>Not Approved</span>
@@ -205,7 +205,7 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <label for="viewStatus{{ $template->id }}">Status</label>
-                                                         @if($template->status)
+                                                        @if($template->content_ok == 1 && $template->grammar_ok == 1 && $template->spelling_ok == 1)
                                                             <span class='badge text-bg-success'>Approved</span>
                                                         @else
                                                             <span class='badge text-bg-danger'>Not Approved</span>
@@ -323,17 +323,10 @@
                                                             
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <button
-                                                                type="button"
-                                                                class="btn btn-secondary"
-                                                                data-bs-dismiss="modal"
-                                                            >
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                                                                 Close
                                                             </button>
-                                                            <button
-                                                                type="submit"
-                                                                class="btn btn-primary"
-                                                            >
+                                                            <button type="submit" class="btn btn-primary">
                                                                 Save Changes
                                                             </button>
                                                         </div>

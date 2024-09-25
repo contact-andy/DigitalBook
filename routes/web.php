@@ -27,6 +27,7 @@ use App\Http\Controllers\DashboardSettingController;
 use App\Http\Controllers\MessageSettingController;
 
 use App\Http\Controllers\MessageTemplateApprovalController;
+use App\Http\Controllers\ResponseTemplateApprovalController;
 
 
 use App\Http\Middleware\CheckApplicationPermission;
@@ -97,7 +98,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/event-approval/instantApprove', [EventCategoryController::class, 'instantApprove'])->name('event-approval.instantApprove');
 
     Route::resource('message-approval', MessageApprovalController::class)->middleware('application.permission');
-    Route::resource('message-template-approval', MessageTemplateApprovalController::class)->middleware('application.permission');
+    
+    Route::get('message-templates-approval', [MessageTemplateApprovalController::class, 'index'])->name('message-templates-approval.index')->middleware('application.permission');
+    Route::put('message-templates-approval', [MessageTemplateApprovalController::class, 'approve'])->name('message-templates-approval.approve')->middleware('application.permission');
+    Route::post('/template-approval/instantApprove', [MessageTemplateApprovalController::class, 'instantApprove'])->name('template-approval.instantApprove');
+
+    Route::get('response-templates-approval', [ResponseTemplateApprovalController::class, 'index'])->name('response-templates-approval.index')->middleware('application.permission');
+    Route::put('response-templates-approval', [ResponseTemplateApprovalController::class, 'approve'])->name('response-templates-approval.approve')->middleware('application.permission');
+    Route::post('/response-approval/instantApprove', [ResponseTemplateApprovalController::class, 'instantApprove'])->name('response-approval.instantApprove');
 
     // Route::get('/category-approval/instantApprove/{id}', [MessageCategoryController::class, 'instantApprove'])->name('category-approval.instantApprove');
 

@@ -15,10 +15,14 @@ class MessageTemplate extends Model
         'type',  
         'messageCategoryId',
         'campusId',
-        'status',
         'gradeLevels',
         'created_by',
         'updated_by',
+        'content_ok',
+        'grammar_ok',
+        'spelling_ok',
+        'comments',
+        'approved_by',
     ];
 
     protected $dates = ['deleted_at'];
