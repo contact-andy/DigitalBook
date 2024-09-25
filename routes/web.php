@@ -107,6 +107,11 @@ Route::middleware('auth')->group(function () {
     Route::put('response-templates-approval', [ResponseTemplateApprovalController::class, 'approve'])->name('response-templates-approval.approve')->middleware('application.permission');
     Route::post('/response-approval/instantApprove', [ResponseTemplateApprovalController::class, 'instantApprove'])->name('response-approval.instantApprove');
 
+
+    Route::get('survey-approval', [SurveyController::class, 'eventApproval'])->name('survey-approval.index')->middleware('application.permission');
+    Route::put('survey-approval', [SurveyController::class, 'approve'])->name('survey-approval.approve')->middleware('application.permission');
+    Route::post('/survey-approval/instantApprove', [SurveyController::class, 'instantApprove'])->name('survey-approval.instantApprove');
+
     // Route::get('/category-approval/instantApprove/{id}', [MessageCategoryController::class, 'instantApprove'])->name('category-approval.instantApprove');
 
 });

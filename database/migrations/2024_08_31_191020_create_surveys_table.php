@@ -33,13 +33,16 @@ return new class extends Migration
             $table->boolean('status')->default(0); // 1: Active, 0: Inactive
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
+            $table->string('comment')->nullable();
+            $table->unsignedBigInteger('approved_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
-
+ 
             // Foreign key constraints
             $table->foreign('campusId')->references('id')->on('campuses')->onDelete('cascade');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('approved_by')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

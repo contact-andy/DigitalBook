@@ -258,11 +258,19 @@
                                     document.getElementById("statusView"+categoryId).innerHTML = "<span class='badge text-bg-success'>Approved</span>";
                                     document.getElementById("rejectButton"+categoryId).hidden = "";
                                     document.getElementById("approveButton"+categoryId).hidden = "hidden";                                
+                                    console.log(document.getElementById("status"+categoryId).selectedIndex)
+                                    let index = document.getElementById("status"+categoryId).selectedIndex;
+                                    document.getElementById("status"+categoryId).selectedIndex = index?0:1;
+                                    console.log(document.getElementById("status"+categoryId).selectedIndex)
                                 }
                                 else{
                                     document.getElementById("statusView"+categoryId).innerHTML = "<span class='badge text-bg-danger'>Not Approved</span>";
                                     document.getElementById("rejectButton"+categoryId).hidden = "hidden";
                                     document.getElementById("approveButton"+categoryId).hidden = "";
+                                    console.log(document.getElementById("status"+categoryId).selectedIndex)
+                                    let index = document.getElementById("status"+categoryId).selectedIndex;
+                                    document.getElementById("status"+categoryId).selectedIndex = index?0:1;
+                                    console.log(document.getElementById("status"+categoryId).selectedIndex)
                                 }
                                 
                             } else {
