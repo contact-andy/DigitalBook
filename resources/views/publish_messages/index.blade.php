@@ -4,6 +4,7 @@
     <div class="container-fluid p-0">
         
         @php
+            
             $selectedCampus = 0;
             $selectedCampusName = "EMPTY";
             if(session('selectedCampus')){
@@ -23,6 +24,14 @@
                 }
             }
 
+            // $dataGrants = DB::table('data_grants')->where('campusId', $selectedCampus)
+            // ->where('academicYear', $academicYear)
+            // ->where('userId', Auth::id())
+            // ->get();
+            $dataGrantGradeLevels = DB::table('data_grants')->where('campusId', $selectedCampus)
+            ->where('academicYear', $academicYear)->where('userId', Auth::id())->distinct()->get(['gradeLevelId']);
+
+           
             $selectedGradeLevel = 0;
             $selectedGradeLevelName = "EMPTY";
             if(session('selectedGradeLevel')){
@@ -36,13 +45,21 @@
             }
             else{
                 foreach($gradeLevels as $gradeLevel){
-                    if($gradeLevel->campusId == $selectedCampus){
-                        $selectedGradeLevelName = $gradeLevel->level;
-                        $selectedGradeLevel = $gradeLevel->id;
-                        break;
+                    foreach ($dataGrantGradeLevels as $dGrant)
+                    {
+                        if($dGrant->gradeLevelId == $gradeLevel->id){
+                            if($gradeLevel->campusId == $selectedCampus){
+                                $selectedGradeLevelName = $gradeLevel->level;
+                                $selectedGradeLevel = $gradeLevel->id;
+                                break;
+                            }
+                        }
                     }
                 }
             }
+
+            $dataGrantSections = DB::table('data_grants')->where('campusId', $selectedCampus)->where('gradeLevelId', $selectedGradeLevel)
+            ->where('academicYear', $academicYear)->where('userId', Auth::id())->distinct()->get(['sectionId']);
 
             $selectedSection = 0;
             $selectedSectionName = "EMPTY";
@@ -57,10 +74,15 @@
             }
             else{
                 foreach($sections as $section){
-                    if($section->campusId == $selectedCampus){
-                        $selectedSectionName = $section->title;
-                        $selectedSection = $section->id;
-                        break;
+                    foreach ($dataGrantSections as $dGrant)
+                    {
+                        if($dGrant->sectionId == $section->id){
+                            if($section->campusId == $selectedCampus){
+                                $selectedSectionName = $section->title;
+                                $selectedSection = $section->id;
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -96,6 +118,9 @@
             //     }
             //     $messagetTemplateIdCollection.= $temp->id.',';
             // }
+
+            
+            
 
             $data = DB::table('students')
             ->join('student_currents', 'students.id', '=', 'student_currents.studentId')
@@ -151,11 +176,15 @@
                                <select  class="form-control" id="gradeLevelId" name="gradeLevelId" onChange="gradeLevelSelectionForm.submit();">
                                     @foreach ($gradeLevels as $gradeLevel)
                                         @if($selectedCampus==$gradeLevel->campusId)
-                                            @if($selectedGradeLevel==$gradeLevel->id)
-                                                <option value="{{$gradeLevel->id}}" selected>{{ $gradeLevel->level }}</option>
-                                            @else
-                                                <option value="{{$gradeLevel->id}}">{{ $gradeLevel->level }}</option>
-                                            @endif
+                                            @foreach ($dataGrantGradeLevels as $dGrant)
+                                                @if($dGrant->gradeLevelId == $gradeLevel->id)
+                                                    @if($selectedGradeLevel==$gradeLevel->id)
+                                                        <option value="{{$gradeLevel->id}}" selected>{{ $gradeLevel->level }}</option>
+                                                    @else
+                                                        <option value="{{$gradeLevel->id}}">{{ $gradeLevel->level }}</option>
+                                                    @endif 
+                                                @endif
+                                            @endforeach
                                         @endif
                                     @endforeach
                                 </select>
@@ -172,12 +201,15 @@
                                <select  class="form-control" id="sectionId" name="sectionId" onChange="sectionSelectionForm.submit();">
                                     @foreach ($sections as $section)
                                         @if($selectedCampus==$section->campusId)
-                                            @if($selectedSection==$section->id)
-                                                <option value="{{$section->id}}" selected>{{ $section->title }}</option>
-                                            @else
-                                                <option value="{{$section->id}}">{{ $section->title }}</option>
-                                            @endif    
-                                        
+                                            @foreach ($dataGrantSections as $dGrant)
+                                                @if($dGrant->sectionId == $section->id)
+                                                    @if($selectedSection==$section->id)
+                                                        <option value="{{$section->id}}" selected>{{ $section->title }}</option>
+                                                    @else
+                                                        <option value="{{$section->id}}">{{ $section->title }}</option>
+                                                    @endif    
+                                                @endif
+                                            @endforeach
                                         @endif
                                     @endforeach
                                 </select>
@@ -206,7 +238,6 @@
                                
                             </div>
                         </form>    
-                        
                         
                     </div>
                 </div>

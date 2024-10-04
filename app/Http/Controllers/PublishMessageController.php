@@ -9,6 +9,8 @@ use App\Models\GeneralSetting;
 
 use App\Models\PublishMessage;
 use App\Models\PublishMessageDetail;
+use App\Models\DataGrant;
+
 
 use App\Models\GradeLevel;
 use App\Models\Section;
@@ -90,6 +92,12 @@ class PublishMessageController extends Controller
         ->whereIn('message_templates.campusId', $campusPermissions)
         ->where('message_templates.created_by', Auth::id())
         ->get();
+
+
+        // $dataGrants = DataGrant::whereIn('campusId', $campusPermissions)
+        // ->where('academicYear ', $academicYear)
+        // ->where('userId  ', Auth::id())
+        // ->get();
 
 
         return view('publish_messages.index', [

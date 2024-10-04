@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('sectionId')->unsigned();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('updated_by')->nullable();
+            $table->integer('academicYear');
             $table->timestamps();
             $table->softDeletes();
 

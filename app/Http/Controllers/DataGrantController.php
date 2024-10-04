@@ -9,7 +9,7 @@ use App\Models\DcbApplicationList;
 use App\Models\Section;
 use App\Models\GradeLevel;
 use App\Models\User;
-
+use App\Models\GeneralSetting;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -30,6 +30,8 @@ class DataGrantController extends Controller
         ->where('appId', $applicationListId)->pluck('campusId')->toArray();
         $campuses =  Campuse::whereIn('id', $campusPermissions)->get();
 
+        $settingData = GeneralSetting::orderBy('id','desc')->first();
+        $academicYear = $settingData->academicYear;
         // $dataGrants = DataGrant::all();
         $gradeLevels =  GradeLevel::whereIn('campusId', $campusPermissions)->get();
         $sections =  Section::whereIn('campusId', $campusPermissions)->get();
@@ -62,6 +64,8 @@ class DataGrantController extends Controller
      */
     public function store(Request $request)
     {
+        $settingData = GeneralSetting::orderBy('id','desc')->first();
+        $academicYear = $settingData->academicYear;
         $request->validate([
             'dataGrantUserId' => 'required',
             'dataGrantCampusId' => 'nullable|string',
@@ -81,6 +85,7 @@ class DataGrantController extends Controller
         $clear = DataGrant::where('userId',$dataGrantUserId)
         ->where('campusId',  $dataGrantCampusId)
         ->where('appId',  $dataGrantAppId)
+        ->where('academicYear',  $academicYear)
         ->forceDelete();
         // return $clear;
         $saveCounter=0;
@@ -94,6 +99,7 @@ class DataGrantController extends Controller
             ->where('appId',  $dataGrantAppId)
             ->where('gradeLevelId',  $gradeLevelId)
             ->where('sectionId',  $sectionId)
+            ->where('academicYear',  $academicYear)
             ->count();
             if($checkUniqueCount==0){
                 $grant = new DataGrant([
@@ -102,6 +108,7 @@ class DataGrantController extends Controller
                     'campusId' => $dataGrantCampusId,
                     'gradeLevelId' => $gradeLevelId,
                     'sectionId' => $sectionId,
+                    'academicYear' => $academicYear,
                     'created_by' => auth()->id(),
                     'updated_by' => auth()->id(),
                 ]);

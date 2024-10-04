@@ -18,6 +18,7 @@ class DataGrant extends Model
         'sectionId',
         'created_by',
         'updated_by',
+        'academicYear',
     ];
 
     protected $dates = ['deleted_at'];
