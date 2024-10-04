@@ -65,6 +65,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('message-templates', MessageTemplateController::class)->middleware('application.permission');
     Route::resource('response-templates', ResponseTemplateController::class)->middleware('application.permission');
     Route::resource('publish-messages', PublishMessageController::class)->middleware('application.permission');
+    Route::post('/after-publish-messages-campus-selection', [PublishMessageController::class, 'afterCampusSelection'])->name('after-publish-messages-campus-selection');
+    Route::post('/after-publish-messages-gradelevel-selection', [PublishMessageController::class, 'afterGradeLevelSelection'])->name('after-publish-messages-gradelevel-selection');
+    Route::post('/after-publish-messages-section-selection', [PublishMessageController::class, 'afterSectionSelection'])->name('after-publish-messages-section-selection');
+    Route::post('/after-publish-messages-template-selection', [PublishMessageController::class, 'afterTemplateSelection'])->name('after-publish-messages-template-selection');
     
     Route::resource('event-categories', EventCategoryController::class)->middleware('application.permission');
     Route::resource('academic-calendars', AcademicCalendarController::class)->middleware('application.permission');
